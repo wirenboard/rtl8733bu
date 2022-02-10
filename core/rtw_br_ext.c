@@ -17,10 +17,13 @@
 #ifdef __KERNEL__
 	#include <linux/if_arp.h>
 	#include <net/ip.h>
-	#include <net/ipx.h>
-	#include <linux/atalk.h>
-	#include <linux/udp.h>
-	#include <linux/if_pppox.h>
+#include <linux/version.h>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 15, 0)
+#include <net/ipx.h>
+#endif
+#include <linux/atalk.h>
+#include <linux/udp.h>
+#include <linux/if_pppox.h>
 #endif
 
 #if 1	/* rtw_wifi_driver */
@@ -168,7 +171,7 @@ static __inline__ void __nat25_generate_ipv4_network_addr(unsigned char *network
 	memcpy(networkAddr + 7, (unsigned char *)ipAddr, 4);
 }
 
-
+#ifdef _NET_INET_IPX_H_
 static __inline__ void __nat25_generate_ipx_network_addr_with_node(unsigned char *networkAddr,
 		unsigned int *ipxNetAddr, unsigned char *ipxNodeAddr)
 {
@@ -200,7 +203,7 @@ static __inline__ void __nat25_generate_apple_network_addr(unsigned char *networ
 	memcpy(networkAddr + 1, (unsigned char *)network, 2);
 	networkAddr[3] = *node;
 }
-
+#endif
 
 static __inline__ void __nat25_generate_pppoe_network_addr(unsigned char *networkAddr,
 		unsigned char *ac_mac, unsigned short *sid)
@@ -211,7 +214,6 @@ static __inline__ void __nat25_generate_pppoe_network_addr(unsigned char *networ
 	memcpy(networkAddr + 1, (unsigned char *)sid, 2);
 	memcpy(networkAddr + 3, (unsigned char *)ac_mac, 6);
 }
-
 
 #ifdef CL_IPV6_PASS
 static  void __nat25_generate_ipv6_network_addr(unsigned char *networkAddr,
@@ -330,6 +332,7 @@ static __inline__ int __nat25_network_hash(unsigned char *networkAddr)
 		x = networkAddr[7] ^ networkAddr[8] ^ networkAddr[9] ^ networkAddr[10];
 
 		return x & (NAT25_HASH_SIZE - 1);
+#ifdef _NET_INET_IPX_H_
 	} else if (networkAddr[0] == NAT25_IPX) {
 		unsigned long x;
 
@@ -343,6 +346,7 @@ static __inline__ int __nat25_network_hash(unsigned char *networkAddr)
 		x = networkAddr[1] ^ networkAddr[2] ^ networkAddr[3];
 
 		return x & (NAT25_HASH_SIZE - 1);
+#endif
 	} else if (networkAddr[0] == NAT25_PPPOE) {
 		unsigned long x;
 
@@ -889,6 +893,7 @@ int nat25_db_handle(_adapter *priv, struct sk_buff *skb, int method)
 		}
 	}
 
+#ifdef _NET_INET_IPX_H_
 	/*---------------------------------------------------*/
 	/*         Handle IPX and Apple Talk frame          */
 	/*---------------------------------------------------*/
@@ -1110,6 +1115,7 @@ int nat25_db_handle(_adapter *priv, struct sk_buff *skb, int method)
 		return -1;
 	}
 
+#endif
 	/*---------------------------------------------------*/
 	/*                Handle PPPoE frame                */
 	/*---------------------------------------------------*/

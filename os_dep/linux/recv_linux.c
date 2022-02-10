@@ -405,8 +405,13 @@ static int napi_recv(_adapter *padapter, int budget)
 			So, we should prevent cloned SKB go into napi_gro_receive.
 		*/
 		if (pregistrypriv->en_gro && !skb_cloned(pskb)) {
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 12, 0))
+			rtw_napi_gro_receive(&padapter->napi, pskb);
+			rx_ok = _TRUE;
+#else
 			if (rtw_napi_gro_receive(&padapter->napi, pskb) != GRO_DROP)
 				rx_ok = _TRUE;
+#endif
 			goto next;
 		}
 #endif /* CONFIG_RTW_GRO */
@@ -731,4 +736,3 @@ void rtw_os_read_port(_adapter *padapter, struct recv_buf *precvbuf)
 #endif
 
 }
-

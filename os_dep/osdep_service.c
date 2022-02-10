@@ -1306,10 +1306,18 @@ u32 _rtw_down_sema(_sema *sema)
 #endif
 }
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 17, 0)
 inline void thread_exit(_completion *comp)
+#else
+inline void kthread_thread_exit(_completion *comp)
+#endif
 {
 #ifdef PLATFORM_LINUX
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 17, 0)
 	complete_and_exit(comp, 0);
+#else
+	kthread_complete_and_exit(comp, 0);
+#endif
 #endif
 
 #ifdef PLATFORM_FREEBSD
@@ -2962,7 +2970,9 @@ u64 rtw_division64(u64 x, u64 y)
 inline u32 rtw_random32(void)
 {
 #ifdef PLATFORM_LINUX
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0))
+	return get_random_u32();
+#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
 	return prandom_u32();
 #elif (LINUX_VERSION_CODE <= KERNEL_VERSION(2, 6, 18))
 	u32 random_int;
@@ -3526,4 +3536,3 @@ int hwaddr_aton_i(const char *txt, u8 *addr)
 
 	return 0;
 }
-

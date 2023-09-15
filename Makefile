@@ -77,7 +77,7 @@ CONFIG_80211W = y
 CONFIG_REDUCE_TX_CPU_LOADING = n
 CONFIG_BR_EXT = y
 CONFIG_TDLS = n
-CONFIG_WIFI_MONITOR = n
+CONFIG_WIFI_MONITOR = y
 CONFIG_MCC_MODE = n
 CONFIG_APPEND_VENDOR_IE_ENABLE = n
 CONFIG_RTW_NAPI = y
@@ -2288,6 +2288,9 @@ endif
 endif
 
 ########### CUSTOMER ################################
+EXTRA_CFLAGS += -DCONFIG_CONCURRENT_MODE
+# EXTRA_CFLAGS += -DCONFIG_ANTENNA_DIVERSITY
+
 ifeq ($(CONFIG_CUSTOMER_HUAWEI_GENERAL), y)
 CONFIG_CUSTOMER_HUAWEI = y
 endif
@@ -2515,4 +2518,3 @@ clean:
 	rm -fr *.mod.c *.mod *.o .*.cmd *.ko *~
 	rm -fr .tmp_versions
 endif
-

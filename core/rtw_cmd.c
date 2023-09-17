@@ -3065,6 +3065,9 @@ void rtw_iface_dynamic_chk_wk_hdl(_adapter *padapter)
 }
 void rtw_dynamic_chk_wk_hdl(_adapter *padapter)
 {
+#ifdef RTW_DETECT_TRX_HANG_JG3
+	rtw_hal_get_hwreg(padapter, HW_VAR_DETECT_TRX_HANG_JG3, 0);
+#endif
 	rtw_mi_dynamic_chk_wk_hdl(padapter);
 #ifdef CONFIG_MP_INCLUDED
 	if (rtw_mp_mode_check(padapter) == _FALSE)
@@ -3110,6 +3113,10 @@ void rtw_dynamic_chk_wk_hdl(_adapter *padapter)
 #endif /* CONFIG_MCC_MODE */
 
 	rtw_hal_periodic_tsf_update_chk(padapter);
+
+#ifdef RTW_DETECT_HANG
+	rtw_hal_is_hang_check(padapter);
+#endif /* RTW_DETECT_HANG */
 }
 
 #ifdef CONFIG_LPS

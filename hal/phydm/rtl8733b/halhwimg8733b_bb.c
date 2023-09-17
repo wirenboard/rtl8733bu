@@ -1010,7 +1010,7 @@ odm_read_and_config_mp_8733b_agc_tab(struct dm_struct *dm)
 u32
 odm_get_version_mp_8733b_agc_tab(void)
 {
-		return 33;
+		return 38;
 }
 
 /******************************************************************************
@@ -1515,7 +1515,7 @@ const u32 array_mp_8733b_phy_reg[] = {
 		0x195C, 0x00000800,
 		0x1960, 0x44444444,
 		0x1964, 0x2022653A,
-		0x1968, 0x36636571,
+		0x1968, 0x36636741,
 		0x196C, 0xC100C318,
 		0x1970, 0x00000000,
 		0x1974, 0x00000000,
@@ -2106,7 +2106,7 @@ odm_read_and_config_mp_8733b_phy_reg(struct dm_struct *dm)
 u32
 odm_get_version_mp_8733b_phy_reg(void)
 {
-		return 33;
+		return 38;
 }
 
 /******************************************************************************

@@ -2613,37 +2613,65 @@ int rtw_is_dir_readable(const char *path)
 static int retriveFromFile(const char *path, u8 *buf, u32 sz)
 {
 #if defined(CONFIG_RTW_ANDROID_GKI)
-	int ret = -1;
-	//char req_fw_buf[4096];
+	int ret = -EINVAL;
 	const struct firmware *fw = NULL;
 	char* const delim = "/";
-	char *name, *token, *cur, path_tmp[1024] = {0};
+	char *name, *token, *cur, *path_tmp = NULL;
 
-	if (path && buf) {
-		_rtw_memcpy(path_tmp, path, strlen(path));
-		cur = path_tmp;
 
+	if (path == NULL || buf == NULL) {
+		RTW_ERR("%s() NULL pointer\n", __func__);
+		goto err;
+	}
+
+	path_tmp = kstrdup(path, GFP_KERNEL);
+	if (path_tmp == NULL) {
+		RTW_ERR("%s() cannot copy path for parsing file name\n", __func__);
+		goto err;
+	}
+
+	/* parsing file name from path */
+	cur = path_tmp;
+	token = strsep(&cur, delim);
+	while (token != NULL) {
 		token = strsep(&cur, delim);
-		while (token != NULL) {
-			token = strsep(&cur, delim);
-			if(token)
-				name = token;
-		}
+		if(token)
+			name = token;
+	}
 
-		ret = request_firmware(&fw, name, NULL);
-		if (ret == 0) {
-			RTW_INFO("%s() success, file size : %zu\n", __func__, fw->size);
+	if (name == NULL) {
+		RTW_ERR("%s() parsing file name fail\n", __func__);
+		goto err;
+	}
+
+	/* request_firmware() will find file in /vendor/firmware but not in path */
+	ret = request_firmware(&fw, name, NULL);
+	if (ret == 0) {
+		RTW_INFO("%s() Success. retrieve file : %s, file size : %zu\n", __func__, name, fw->size);
+
+		if ((u32)fw->size < sz) {
 			_rtw_memcpy(buf, fw->data, (u32)fw->size);
 			ret = (u32)fw->size;
+			goto exit;
 		} else {
-			RTW_INFO("%s() fail, error : %d\n", __func__, ret);
+			RTW_ERR("%s() file size : %zu exceed buf size : %u\n", __func__, fw->size, sz);
+			ret = -EFBIG;
+			goto err;
 		}
-		if(fw)
-			release_firmware(fw);
-	}else {
-		RTW_INFO("%s NULL pointer\n", __FUNCTION__);
-		ret =  -EINVAL;
+	} else {
+		RTW_ERR("%s() Fail. retrieve file : %s, error : %d\n", __func__, name, ret);
+		goto err;
 	}
+
+
+
+err:
+	RTW_ERR("%s() Fail. retrieve file : %s, error : %d\n", __func__, path, ret);
+exit:
+	if (path_tmp)
+		kfree(path_tmp);
+	if (fw)
+		release_firmware(fw);
 	return ret;
 #else /* !defined(CONFIG_RTW_ANDROID_GKI) */
 	int ret = -1;

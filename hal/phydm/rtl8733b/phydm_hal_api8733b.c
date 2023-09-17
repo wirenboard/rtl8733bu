@@ -1321,8 +1321,8 @@ config_phydm_switch_bandwidth_8733b(struct dm_struct *dm, u8 pri_ch,
 			/* @ADC clock = 160M clock for BW20 */
 			odm_set_bb_reg(dm, R_0x9f0, 0xf, 0xc);
 
-			/* TX BPSK/QPSK BandEdge configure */
-			odm_set_bb_reg(dm, R_0x81c, 0xf, 0xa);
+			/* TX BPSK/QPSK BandEdge configure for SRRC */
+			odm_set_bb_reg(dm, R_0x81c, 0xf, 0x9);
 		}
 
 		/* @TX_RF_BW:[1:0]=0x0, RX_RF_BW:[3:2]=0x0 */
@@ -1377,8 +1377,8 @@ config_phydm_switch_bandwidth_8733b(struct dm_struct *dm, u8 pri_ch,
 
 		/* TX band edge improvement by Anchi */
 		odm_set_bb_reg(dm, R_0x808, 0x000f0000, 0xd);
-		/* TX BPSK/QPSK BandEdge configure */
-		odm_set_bb_reg(dm, R_0x81c, 0xf, 0xa);
+		/* TX BPSK/QPSK BandEdge configure for SRRC */
+		odm_set_bb_reg(dm, R_0x81c, 0xf, 0x9);
 
 		break;
 	default:
@@ -1419,6 +1419,17 @@ config_phydm_switch_bandwidth_8733b(struct dm_struct *dm, u8 pri_ch,
 				break;
 		}
 	}
+	/*TX_CCK_IND_int*/
+	if (bw == CHANNEL_WIDTH_40) {
+		odm_set_rf_reg(dm, RF_PATH_A, RF_0x1a, BIT(0), 0x1);
+		odm_set_rf_reg(dm, RF_PATH_B, RF_0x1a, BIT(0), 0x1);
+		odm_set_rf_reg(dm, RF_PATH_A, RF_0x1a, BIT(16), 0x0);
+		odm_set_rf_reg(dm, RF_PATH_B, RF_0x1a, BIT(16), 0x0);
+	} else {
+		odm_set_rf_reg(dm, RF_PATH_A, RF_0x1a, BIT(0), 0x0);
+		odm_set_rf_reg(dm, RF_PATH_B, RF_0x1a, BIT(0), 0x0);
+	}
+	
 	if (!rf_reg_status) {
 		PHYDM_DBG(dm, ODM_PHY_CONFIG,
 			  "Fail to switch bw (bw:%d, primary ch:%d), because writing RF register is fail\n",
@@ -1470,9 +1481,11 @@ void phydm_spur_cancellation_8733b(struct dm_struct *dm) {
 	odm_set_bb_reg(dm, R_0x884, 0x1C000,0x4);
 	odm_set_bb_reg(dm, R_0x1900, 0xF, 6);
 	odm_set_bb_reg(dm, R_0x1908, 0xF0, 9);
-	if ( (*dm->channel == 54) ||(*dm->channel == 118)
-		|| (*dm->channel == 151) || (*dm->channel == 153) )
-		phydm_spur_eliminate_8733b(dm);
+	if(*dm->mp_mode == 1) {
+		if ( (*dm->channel == 54) ||(*dm->channel == 118)
+			|| (*dm->channel == 151) || (*dm->channel == 153) )
+			phydm_spur_eliminate_8733b(dm);
+	}
 }
 
 __odm_func__

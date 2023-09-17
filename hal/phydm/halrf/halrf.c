@@ -1418,7 +1418,7 @@ void halrf_watchdog(void *dm_void)
 	halrf_dpk_track(dm);
 #if (RTL8733B_SUPPORT == 1)
 	if (dm->support_ic_type & ODM_RTL8733B){
-		halrf_xtal_thermal_track(dm);
+		//halrf_xtal_thermal_track(dm);
 		halrf_powertracking_thermal(dm);
 	}
 #endif

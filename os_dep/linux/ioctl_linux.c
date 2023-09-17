@@ -7993,13 +7993,6 @@ static int rtw_wowlan_set_pattern(struct net_device *dev,
 
 	poidparam.subcode = 0;
 
-	if (!check_fwstate(pmlmepriv, WIFI_ASOC_STATE) &&
-	    check_fwstate(pmlmepriv, WIFI_STATION_STATE)) {
-		ret = -EFAULT;
-		RTW_INFO("Please Connect With AP First!!\n");
-		goto _rtw_wowlan_set_pattern_exit;
-	}
-
 	if ((wrqu->data.length <= 0) || (wrqu->data.length > MAX_IN_PATTERN_SIZE)) {
 		ret = -EFAULT;
 		RTW_INFO("ERROR: parameter length error, len=%d\n", wrqu->data.length);

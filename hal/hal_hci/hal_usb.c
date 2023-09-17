@@ -99,6 +99,9 @@ int	usb_init_recv_priv(_adapter *padapter, u16 ini_in_buf_sz)
 #if defined(PLATFORM_LINUX) || defined(PLATFORM_FREEBSD)
 
 	skb_queue_head_init(&precvpriv->rx_skb_queue);
+#ifdef CONFIG_USB_PROTECT_RX_CLONED_SKB
+	skb_queue_head_init(&precvpriv->rx_cloned_skb_queue);
+#endif
 
 #ifdef CONFIG_RX_INDICATE_QUEUE
 	memset(&precvpriv->rx_indicate_queue, 0, sizeof(struct ifqueue));

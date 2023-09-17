@@ -737,3 +737,7 @@ static inline bool rtw_assert_protsel_macsleep(_adapter *padapter, u32 addr, u8 
 static inline void rtw_leave_protsel_macsleep(_adapter *padapter) {}
 #endif
 #endif /* __HAL_COMMON_H__ */
+
+#ifdef RTW_DETECT_HANG
+void rtw_hal_is_hang_check(_adapter *padapter);
+#endif

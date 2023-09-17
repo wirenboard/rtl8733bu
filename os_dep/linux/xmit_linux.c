@@ -375,6 +375,7 @@ int _rtw_xmit_entry(_pkt *pkt, _nic_hdl pnetdev)
 {
 	_adapter *padapter = (_adapter *)rtw_netdev_priv(pnetdev);
 	struct xmit_priv *pxmitpriv = &padapter->xmitpriv;
+	struct pwrctrl_priv *pwrpriv = adapter_to_pwrctl(padapter);
 #ifdef CONFIG_TCP_CSUM_OFFLOAD_TX	
 	struct sk_buff *skb = pkt;
 	struct sk_buff *segs, *nskb;
@@ -397,6 +398,13 @@ int _rtw_xmit_entry(_pkt *pkt, _nic_hdl pnetdev)
 		DBG_COUNTER(padapter->tx_logs.os_tx_err_up);
 		#ifdef DBG_TX_DROP_FRAME
 		RTW_INFO("DBG_TX_DROP_FRAME %s if_up fail\n", __FUNCTION__);
+		#endif
+		goto drop_packet;
+	}
+
+	if (pwrpriv->bInSuspend == _TRUE) {
+		#ifdef DBG_TX_DROP_FRAME
+		RTW_INFO("DBG_TX_DROP_FRAME %s in suspend flow\n", __FUNCTION__);
 		#endif
 		goto drop_packet;
 	}

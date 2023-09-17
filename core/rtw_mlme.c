@@ -880,16 +880,29 @@ void update_network(WLAN_BSSID_EX *dst, WLAN_BSSID_EX *src,
 		ss_final = padapter->recvpriv.signal_strength;
 		sq_final = padapter->recvpriv.signal_qual;
 		/* the rssi value here is undecorated, and will be used for antenna diversity */
-		if (sq_smp != 101) /* from the right channel */
+		/* Don't update the RSSI average with scan result which RSSI is -110 */
+		if ((sq_smp != 101) && (src->Rssi != -110)) { /* from the right channel */
 			rssi_final = (src->Rssi + dst->Rssi * 4) / 5;
-		else
+		} else {
+			#ifdef DBG_SITESURVEY
+			if (src->Rssi == -110)
+				RTW_INFO("Don't update RSSI average of associated network %s " \
+					"with scan result which RSSI is -110\n", src->Ssid.Ssid);
+			#endif
 			rssi_final = rssi_ori;
+		}
 	} else {
-		if (sq_smp != 101) { /* from the right channel */
+		/* Don't update the RSSI average with scan result which RSSI is -110 */
+		if ((sq_smp != 101) && (src->Rssi != -110)) { /* from the right channel */
 			ss_final = ((u32)(src->PhyInfo.SignalStrength) + (u32)(dst->PhyInfo.SignalStrength) * 4) / 5;
 			sq_final = ((u32)(src->PhyInfo.SignalQuality) + (u32)(dst->PhyInfo.SignalQuality) * 4) / 5;
 			rssi_final = (src->Rssi + dst->Rssi * 4) / 5;
 		} else {
+			#ifdef DBG_SITESURVEY
+			if (src->Rssi == -110)
+				RTW_INFO("Don't update RSSI average of network %s " \
+					"with scan result which RSSI is -110\n", src->Ssid.Ssid);
+			#endif
 			/* bss info not receving from the right channel, use the original RX signal infos */
 			ss_final = dst->PhyInfo.SignalStrength;
 			sq_final = dst->PhyInfo.SignalQuality;
@@ -1065,6 +1078,15 @@ bool rtw_update_scanned_network(_adapter *adapter, WLAN_BSSID_EX *target)
 	 * with this beacon's information */
 	/* if (rtw_end_of_queue_search(phead,plist)== _TRUE) { */
 	if (!target_find) {
+
+		/* Drop the scan result which RSSI is -110, means this packet's RSSI is 0 */
+		if (target->Rssi == -110) {
+			#ifdef DBG_SITESURVEY
+			RTW_INFO("Don't add network %s which RSSI is -110\n", target->Ssid.Ssid);
+			#endif
+			goto unlock_scan_queue;
+		}
+
 		if (_rtw_queue_empty(&(pmlmepriv->free_bss_pool)) == _TRUE) {
 			/* If there are no more slots, expire the choice */
 			/* list_del_init(&choice->list); */
@@ -5038,8 +5060,7 @@ sint rtw_restruct_sec_ie(_adapter *adapter, u8 *out_ie)
 		ielength = rtw_rsn_sync_pmkid(adapter, out_ie, ielength, iEntry);
 	}
 
-	if ((psecuritypriv->auth_type == MLME_AUTHTYPE_SAE) &&
-		(psecuritypriv->rsnx_ie_len >= 3)) {
+	if ((psecuritypriv->rsnx_ie_len >= 3)) {
 		u8 *_pos = out_ie + (psecuritypriv->supplicant_ie[1] + 2);
 		_rtw_memcpy(_pos, psecuritypriv->rsnx_ie,
 			psecuritypriv->rsnx_ie_len);

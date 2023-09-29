@@ -1431,7 +1431,7 @@ static int __init rtw_drv_entry(void)
 {
 	int ret = 0;
 
-	RTW_PRINT("module init start\n");
+	RTW_DBG("module init start\n");
 	dump_drv_version(RTW_DBGDUMP);
 #ifdef BTCOEXVERSION
 	RTW_PRINT(DRV_NAME" BT-Coex version = %s\n", BTCOEXVERSION);
@@ -1473,7 +1473,7 @@ static int __init rtw_drv_entry(void)
 	}
 
 exit:
-	RTW_PRINT("module init ret=%d\n", ret);
+	RTW_DBG("module init ret=%d\n", ret);
 	return ret;
 }
 

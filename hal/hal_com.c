@@ -586,8 +586,11 @@ u8 MRateToHwRate(enum MGN_RATE rate)
 	if (rate < MGN_UNKNOWN)
 		hw_rate = _MRateToHwRate[rate];
 
-	if (rate != MGN_1M && hw_rate == DESC_RATE1M)
-		RTW_WARN("Invalid rate 0x%x in %s\n", rate, __FUNCTION__);
+	if (rate != MGN_1M && hw_rate == DESC_RATE1M) {
+		// The function can be called before tx_rate initialization,
+		// so it is ok to use default rate
+		RTW_DBG("Invalid rate 0x%x in %s\n", rate, __FUNCTION__);
+	}
 
 	return hw_rate;
 }

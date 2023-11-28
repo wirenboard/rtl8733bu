@@ -3271,7 +3271,7 @@ unsigned int OnAssocRsp(_adapter *padapter, union recv_frame *precv_frame)
 	/* status */
 	status = le16_to_cpu(*(unsigned short *)(pframe + WLAN_HDR_A3_LEN + 2));
 	if (status > 0) {
-		RTW_INFO("assoc reject, status code: %d\n", status);
+		RTW_WARN("assoc reject, status code: %d\n", status);
 		pmlmeinfo->state = WIFI_FW_NULL_STATE;
 		res = -4;
 		goto report_assoc_result;
@@ -3288,7 +3288,7 @@ unsigned int OnAssocRsp(_adapter *padapter, union recv_frame *precv_frame)
 	
 	/* check aid value */
 	if (res < 1 || res > 2007) {
-		RTW_INFO("assoc reject, aid: %d\n", res);
+		RTW_WARN("assoc reject, aid: %d\n", res);
 		pmlmeinfo->state = WIFI_FW_NULL_STATE;
 		res = -4;
 		goto report_assoc_result;

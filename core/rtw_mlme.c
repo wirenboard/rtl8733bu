@@ -2525,7 +2525,7 @@ void rtw_free_assoc_resources(_adapter *adapter, u8 lock_scanned_queue)
 			}
 #endif /* CONFIG_P2P */
 		} else
-			RTW_ERR("Free disconnecting network of scanned_queue failed due to pwlan == NULL\n\n");
+			RTW_INFO("Free disconnecting network of scanned_queue failed due to pwlan == NULL\n\n");
 	}
 
 	if ((check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE) && (adapter->stapriv.asoc_sta_count == 1))

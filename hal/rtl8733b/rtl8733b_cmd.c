@@ -641,7 +641,7 @@ void rtl8733b_c2h_handler_no_io(PADAPTER adapter, u8 *pbuf, u16 length)
 		if (res == _FAIL) {
 			if (id == C2H_BT_INFO || id == C2H_MAILBOX_STATUS) {
 				RTW_INFO("%s: C2H(%d) enqueue FAIL!\n", __FUNCTION__, id);
-			} else 
+			} else {
 				RTW_ERR("%s: C2H(%d) enqueue FAIL!\n", __FUNCTION__, id);
 			}
 		}

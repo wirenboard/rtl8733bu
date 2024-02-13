@@ -3501,7 +3501,7 @@ bypass_p2p_chk:
 	    && (rtw_get_passing_time_ms(pmlmepriv->lastscantime) >
 		registry_par->scan_interval_thr)
 	    && rtw_mi_busy_traffic_check(padapter)) {
-		RTW_WARN(FUNC_ADPT_FMT ": scan abort!! BusyTraffic\n",
+		RTW_DBG(FUNC_ADPT_FMT ": scan abort!! BusyTraffic\n",
 			 FUNC_ADPT_ARG(padapter));
  		need_indicate_scan_done = _TRUE;
 		goto check_need_indicate_scan_done;

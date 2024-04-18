@@ -2402,7 +2402,7 @@ u8 _rtw_sitesurvey_condition_check(const char *caller, _adapter *adapter, bool c
 	    && (rtw_get_passing_time_ms(pmlmepriv->lastscantime) >
 		registry_par->scan_interval_thr)
 	    && rtw_mi_busy_traffic_check(adapter)) {
-		RTW_WARN("%s ("ADPT_FMT") : scan abort!! BusyTraffic\n",
+		RTW_DBG("%s ("ADPT_FMT") : scan abort!! BusyTraffic\n",
 			 caller, ADPT_ARG(adapter));
 		ss_condition = SS_DENY_BUSY_TRAFFIC;
 		goto _exit;

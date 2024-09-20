@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Copyright(c) 2007 - 2017 Realtek Corporation.
+ * Copyright(c) 2007 - 2021 Realtek Corporation.
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
@@ -26,27 +26,24 @@ static const char *_security_type_str[] = {
 	"WEP104",
 	"SMS4",
 	"GCMP",
-};
-
-static const char *_security_type_bip_str[] = {
+#ifdef CONFIG_IEEE80211W
 	"BIP_CMAC_128",
 	"BIP_GMAC_128",
-	"BIP_GMAC_256",
-	"BIP_CMAC_256",
+#endif
 };
 
 const char *security_type_str(u8 value)
 {
-#ifdef CONFIG_IEEE80211W
-	if ((_BIP_MAX_ > value) && (value >= _BIP_CMAC_128_))
-		return _security_type_bip_str[value & ~_SEC_TYPE_BIT_];
-#endif
-
 	if (_CCMP_256_ == value)
 		return "CCMP_256";
 	if (_GCMP_256_ == value)
 		return "GCMP_256";
-
+#ifdef CONFIG_IEEE80211W
+	if (_BIP_CMAC_256_ == value)
+		return "BIP_CMAC_256";
+	if (_BIP_GMAC_256_ == value)
+		return "BIP_GMAC_256";
+#endif
 	if (_SEC_TYPE_MAX_ > value)
 		return _security_type_str[value];
 
@@ -735,7 +732,7 @@ u32	rtw_tkip_encrypt(_adapter *padapter, u8 *pxmitframe)
 	u8   hw_hdr_offset = 0;
 	struct arc4context mycontext;
 	sint			curfragnum, length;
-	u32	prwskeylen;
+	/*u32	prwskeylen;*/
 
 	u8	*pframe, *payload, *iv, *prwskey;
 	union pn48 dot11txpn;
@@ -791,7 +788,7 @@ u32	rtw_tkip_encrypt(_adapter *padapter, u8 *pxmitframe)
 				prwskey = pattrib->dot118021x_UncstKey.skey;
 			}
 
-			prwskeylen = 16;
+			/*prwskeylen = 16;*/
 
 			for (curfragnum = 0; curfragnum < pattrib->nr_frags; curfragnum++) {
 				iv = pframe + pattrib->hdrlen;
@@ -838,9 +835,7 @@ u32	rtw_tkip_encrypt(_adapter *padapter, u8 *pxmitframe)
 
 	}
 	return res;
-
 }
-
 
 /* The hlen isn't include the IV */
 u32 rtw_tkip_decrypt(_adapter *padapter, u8 *precvframe)
@@ -853,7 +848,7 @@ u32 rtw_tkip_decrypt(_adapter *padapter, u8 *precvframe)
 	u8	crc[4];
 	struct arc4context mycontext;
 	sint			length;
-	u32	prwskeylen;
+	/*u32	prwskeylen;*/
 
 	u8	*pframe, *payload, *iv, *prwskey;
 	union pn48 dot11txpn;
@@ -911,10 +906,10 @@ u32 rtw_tkip_decrypt(_adapter *padapter, u8 *precvframe)
 				/* RTW_INFO("rx bc/mc packets, to perform sw rtw_tkip_decrypt\n"); */
 				/* prwskey = psecuritypriv->dot118021XGrpKey[psecuritypriv->dot118021XGrpKeyid].skey; */
 				prwskey = psecuritypriv->dot118021XGrpKey[prxattrib->key_index].skey;
-				prwskeylen = 16;
+				/*prwskeylen = 16;*/
 			} else {
 				prwskey = &stainfo->dot118021x_UncstKey.skey[0];
-				prwskeylen = 16;
+				/*prwskeylen = 16;*/
 			}
 
 			iv = pframe + prxattrib->hdrlen;

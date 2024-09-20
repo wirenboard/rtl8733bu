@@ -34,7 +34,7 @@ efuse_cmd_cnstr_state_87xx(struct halmac_adapter *adapter);
 
 static enum halmac_ret_status
 proc_dump_efuse_87xx(struct halmac_adapter *adapter,
-		     enum halmac_efuse_read_cfg cfg);
+			 enum halmac_efuse_read_cfg cfg);
 
 static enum halmac_ret_status
 read_hw_efuse_87xx(struct halmac_adapter *adapter, u32 offset, u32 size,
@@ -72,8 +72,8 @@ check_efuse_enough_87xx(struct halmac_adapter *adapter,
 
 static enum halmac_ret_status
 pg_extend_efuse_87xx(struct halmac_adapter *adapter,
-		     struct halmac_pg_efuse_info *info, u8 word_en,
-		     u8 pre_word_en, u32 eeprom_offset);
+			 struct halmac_pg_efuse_info *info, u8 word_en,
+			 u8 pre_word_en, u32 eeprom_offset);
 
 static enum halmac_ret_status
 proc_pg_efuse_87xx(struct halmac_adapter *adapter,
@@ -98,7 +98,7 @@ mask_eeprom_87xx(struct halmac_adapter *adapter,
  */
 enum halmac_ret_status
 dump_efuse_map_87xx(struct halmac_adapter *adapter,
-		    enum halmac_efuse_read_cfg cfg)
+			enum halmac_efuse_read_cfg cfg)
 {
 	u8 *map = NULL;
 	u8 *efuse_map;
@@ -110,7 +110,7 @@ dump_efuse_map_87xx(struct halmac_adapter *adapter,
 	proc_status = &adapter->halmac_state.efuse_state.proc_status;
 
 	if (cfg == HALMAC_EFUSE_R_FW &&
-	    halmac_fw_validate(adapter) != HALMAC_RET_SUCCESS)
+		halmac_fw_validate(adapter) != HALMAC_RET_SUCCESS)
 		return HALMAC_RET_NO_DLFW;
 
 	PLTFM_MSG_TRACE("[TRACE]%s ===>\n", __func__);
@@ -126,10 +126,9 @@ dump_efuse_map_87xx(struct halmac_adapter *adapter,
 		return HALMAC_RET_ERROR_STATE;
 	}
 
-	if (adapter->halmac_state.mac_pwr == HALMAC_MAC_POWER_OFF) {
+	if (adapter->halmac_state.mac_pwr == HALMAC_MAC_POWER_OFF)
 		// This is not a problem for rtl8733bu, the read completes successfully
 		PLTFM_MSG_TRACE("[ERR]Dump efuse in suspend\n");
-	}
 
 	*proc_status = HALMAC_CMD_PROCESS_IDLE;
 	adapter->evnt.phy_efuse_map = 1;
@@ -162,11 +161,11 @@ dump_efuse_map_87xx(struct halmac_adapter *adapter,
 #else
 		PLTFM_MEMCPY(map, efuse_map, efuse_size - prtct_efuse_size);
 		PLTFM_MEMCPY(map + efuse_size - prtct_efuse_size +
-			     RSVD_CS_EFUSE_SIZE,
-			     efuse_map + efuse_size - prtct_efuse_size +
-			     RSVD_CS_EFUSE_SIZE,
-			     prtct_efuse_size - RSVD_EFUSE_SIZE -
-			     RSVD_CS_EFUSE_SIZE);
+				 RSVD_CS_EFUSE_SIZE,
+				 efuse_map + efuse_size - prtct_efuse_size +
+				 RSVD_CS_EFUSE_SIZE,
+				 prtct_efuse_size - RSVD_EFUSE_SIZE -
+				 RSVD_CS_EFUSE_SIZE);
 #endif
 		PLTFM_MUTEX_UNLOCK(&adapter->efuse_mutex);
 
@@ -178,7 +177,7 @@ dump_efuse_map_87xx(struct halmac_adapter *adapter,
 	}
 
 	if (cnv_efuse_state_87xx(adapter, HALMAC_CMD_CNSTR_IDLE) !=
-	    HALMAC_RET_SUCCESS)
+		HALMAC_RET_SUCCESS)
 		return HALMAC_RET_ERROR_STATE;
 
 	PLTFM_MSG_TRACE("[TRACE]%s <===\n", __func__);
@@ -198,7 +197,7 @@ dump_efuse_map_87xx(struct halmac_adapter *adapter,
  */
 enum halmac_ret_status
 dump_efuse_map_bt_87xx(struct halmac_adapter *adapter,
-		       enum halmac_efuse_bank bank, u32 size, u8 *map)
+			   enum halmac_efuse_bank bank, u32 size, u8 *map)
 {
 	enum halmac_ret_status status = HALMAC_RET_SUCCESS;
 	enum halmac_cmd_process_status *proc_status;
@@ -238,7 +237,7 @@ dump_efuse_map_bt_87xx(struct halmac_adapter *adapter,
 	}
 
 	if (cnv_efuse_state_87xx(adapter, HALMAC_CMD_CNSTR_IDLE) !=
-	    HALMAC_RET_SUCCESS)
+		HALMAC_RET_SUCCESS)
 		return HALMAC_RET_ERROR_STATE;
 
 
@@ -250,7 +249,7 @@ dump_efuse_map_bt_87xx(struct halmac_adapter *adapter,
 	}
 
 	if (cnv_efuse_state_87xx(adapter, HALMAC_CMD_CNSTR_IDLE) !=
-	    HALMAC_RET_SUCCESS)
+		HALMAC_RET_SUCCESS)
 		return HALMAC_RET_ERROR_STATE;
 
 	PLTFM_MSG_TRACE("[TRACE]%s <===\n", __func__);
@@ -270,7 +269,7 @@ dump_efuse_map_bt_87xx(struct halmac_adapter *adapter,
  */
 enum halmac_ret_status
 write_efuse_bt_87xx(struct halmac_adapter *adapter, u32 offset, u8 value,
-		    enum halmac_efuse_bank bank)
+			enum halmac_efuse_bank bank)
 {
 	enum halmac_ret_status status = HALMAC_RET_SUCCESS;
 	enum halmac_cmd_process_status *proc_status;
@@ -312,7 +311,7 @@ write_efuse_bt_87xx(struct halmac_adapter *adapter, u32 offset, u8 value,
 	}
 
 	if (cnv_efuse_state_87xx(adapter, HALMAC_CMD_CNSTR_IDLE) !=
-	    HALMAC_RET_SUCCESS)
+		HALMAC_RET_SUCCESS)
 		return HALMAC_RET_ERROR_STATE;
 
 	//jerry_zhou 20201103 change bank to wifi
@@ -323,7 +322,7 @@ write_efuse_bt_87xx(struct halmac_adapter *adapter, u32 offset, u8 value,
 	}
 
 	if (cnv_efuse_state_87xx(adapter, HALMAC_CMD_CNSTR_IDLE) !=
-	    HALMAC_RET_SUCCESS)
+		HALMAC_RET_SUCCESS)
 		return HALMAC_RET_ERROR_STATE;
 
 	PLTFM_MSG_TRACE("[TRACE]%s <===\n", __func__);
@@ -385,7 +384,7 @@ read_efuse_bt_87xx(struct halmac_adapter *adapter, u32 offset, u8 *value,
 	}
 
 	if (cnv_efuse_state_87xx(adapter, HALMAC_CMD_CNSTR_IDLE) !=
-	    HALMAC_RET_SUCCESS)
+		HALMAC_RET_SUCCESS)
 		return HALMAC_RET_ERROR_STATE;
 
 	//jerry_zhou 20201103  change bank to wifi
@@ -396,7 +395,7 @@ read_efuse_bt_87xx(struct halmac_adapter *adapter, u32 offset, u8 *value,
 	}
 
 	if (cnv_efuse_state_87xx(adapter, HALMAC_CMD_CNSTR_IDLE) !=
-	    HALMAC_RET_SUCCESS)
+		HALMAC_RET_SUCCESS)
 		return HALMAC_RET_ERROR_STATE;
 
 	PLTFM_MSG_TRACE("[TRACE]%s <===\n", __func__);
@@ -512,7 +511,7 @@ dump_log_efuse_map_87xx(struct halmac_adapter *adapter,
 	proc_status = &adapter->halmac_state.efuse_state.proc_status;
 
 	if (cfg == HALMAC_EFUSE_R_FW &&
-	    halmac_fw_validate(adapter) != HALMAC_RET_SUCCESS)
+		halmac_fw_validate(adapter) != HALMAC_RET_SUCCESS)
 		return HALMAC_RET_NO_DLFW;
 
 	PLTFM_MSG_TRACE("[TRACE]%s ===>\n", __func__);
@@ -528,10 +527,9 @@ dump_log_efuse_map_87xx(struct halmac_adapter *adapter,
 		return HALMAC_RET_ERROR_STATE;
 	}
 
-	if (adapter->halmac_state.mac_pwr == HALMAC_MAC_POWER_OFF) {
+	if (adapter->halmac_state.mac_pwr == HALMAC_MAC_POWER_OFF)
 		// This is not a problem for rtl8733bu, the read completes successfully
 		PLTFM_MSG_TRACE("[ERR]Dump efuse in suspend\n");
-	}
 
 	*proc_status = HALMAC_CMD_PROCESS_IDLE;
 	adapter->evnt.log_efuse_map = 1;
@@ -559,7 +557,7 @@ dump_log_efuse_map_87xx(struct halmac_adapter *adapter,
 		PLTFM_MEMSET(map, 0xFF, size);
 
 		if (eeprom_parser_87xx(adapter, adapter->efuse_map, map) !=
-		    HALMAC_RET_SUCCESS) {
+			HALMAC_RET_SUCCESS) {
 			PLTFM_FREE(map, size);
 			return HALMAC_RET_EEPROM_PARSING_FAIL;
 		}
@@ -572,7 +570,7 @@ dump_log_efuse_map_87xx(struct halmac_adapter *adapter,
 	}
 
 	if (cnv_efuse_state_87xx(adapter, HALMAC_CMD_CNSTR_IDLE) !=
-	    HALMAC_RET_SUCCESS)
+		HALMAC_RET_SUCCESS)
 		return HALMAC_RET_ERROR_STATE;
 
 	PLTFM_MSG_TRACE("[TRACE]%s <===\n", __func__);
@@ -592,7 +590,7 @@ dump_log_efuse_mask_87xx(struct halmac_adapter *adapter,
 	proc_status = &adapter->halmac_state.efuse_state.proc_status;
 
 	if (cfg == HALMAC_EFUSE_R_FW &&
-	    halmac_fw_validate(adapter) != HALMAC_RET_SUCCESS)
+		halmac_fw_validate(adapter) != HALMAC_RET_SUCCESS)
 		return HALMAC_RET_NO_DLFW;
 
 	PLTFM_MSG_TRACE("[TRACE]%s ===>\n", __func__);
@@ -608,10 +606,9 @@ dump_log_efuse_mask_87xx(struct halmac_adapter *adapter,
 		return HALMAC_RET_ERROR_STATE;
 	}
 
-	if (adapter->halmac_state.mac_pwr == HALMAC_MAC_POWER_OFF) {
+	if (adapter->halmac_state.mac_pwr == HALMAC_MAC_POWER_OFF)
 		// This is not a problem for rtl8733bu, the read completes successfully
 		PLTFM_MSG_TRACE("[ERR]Dump efuse in suspend\n");
-	}
 
 	*proc_status = HALMAC_CMD_PROCESS_IDLE;
 	adapter->evnt.log_efuse_mask = 1;
@@ -639,7 +636,7 @@ dump_log_efuse_mask_87xx(struct halmac_adapter *adapter,
 		PLTFM_MEMSET(map, 0xFF, size);
 
 		if (eeprom_mask_parser_87xx(adapter, adapter->efuse_map, map) !=
-		    HALMAC_RET_SUCCESS) {
+			HALMAC_RET_SUCCESS) {
 			PLTFM_FREE(map, size);
 			return HALMAC_RET_EEPROM_PARSING_FAIL;
 		}
@@ -652,7 +649,7 @@ dump_log_efuse_mask_87xx(struct halmac_adapter *adapter,
 	}
 
 	if (cnv_efuse_state_87xx(adapter, HALMAC_CMD_CNSTR_IDLE) !=
-	    HALMAC_RET_SUCCESS)
+		HALMAC_RET_SUCCESS)
 		return HALMAC_RET_ERROR_STATE;
 
 	PLTFM_MSG_TRACE("[TRACE]%s <===\n", __func__);
@@ -718,7 +715,7 @@ read_logical_efuse_87xx(struct halmac_adapter *adapter, u32 offset, u8 *value)
 	*value = *(map + offset);
 
 	if (cnv_efuse_state_87xx(adapter, HALMAC_CMD_CNSTR_IDLE) !=
-	    HALMAC_RET_SUCCESS) {
+		HALMAC_RET_SUCCESS) {
 		PLTFM_FREE(map, size);
 		return HALMAC_RET_ERROR_STATE;
 	}
@@ -777,7 +774,7 @@ write_log_efuse_87xx(struct halmac_adapter *adapter, u32 offset, u8 value)
 	}
 
 	if (cnv_efuse_state_87xx(adapter, HALMAC_CMD_CNSTR_IDLE) !=
-	    HALMAC_RET_SUCCESS)
+		HALMAC_RET_SUCCESS)
 		return HALMAC_RET_ERROR_STATE;
 
 	PLTFM_MSG_TRACE("[TRACE]%s <===\n", __func__);
@@ -825,7 +822,7 @@ write_log_efuse_8733B(struct halmac_adapter *adapter, u32 offset, u16 value)
 	}
 
 	if (cnv_efuse_state_87xx(adapter, HALMAC_CMD_CNSTR_IDLE) !=
-	    HALMAC_RET_SUCCESS)
+		HALMAC_RET_SUCCESS)
 		return HALMAC_RET_ERROR_STATE;
 
 	PLTFM_MSG_TRACE("[TRACE]%s <===\n", __func__);
@@ -845,8 +842,8 @@ write_log_efuse_8733B(struct halmac_adapter *adapter, u32 offset, u16 value)
  */
 enum halmac_ret_status
 pg_efuse_by_map_87xx(struct halmac_adapter *adapter,
-		     struct halmac_pg_efuse_info *info,
-		     enum halmac_efuse_read_cfg cfg)
+			 struct halmac_pg_efuse_info *info,
+			 enum halmac_efuse_read_cfg cfg)
 {
 	enum halmac_ret_status status = HALMAC_RET_SUCCESS;
 	enum halmac_cmd_process_status *proc_status;
@@ -903,7 +900,7 @@ pg_efuse_by_map_87xx(struct halmac_adapter *adapter,
 	}
 
 	if (cnv_efuse_state_87xx(adapter, HALMAC_CMD_CNSTR_IDLE) !=
-	    HALMAC_RET_SUCCESS)
+		HALMAC_RET_SUCCESS)
 		return HALMAC_RET_ERROR_STATE;
 
 	PLTFM_MSG_TRACE("[TRACE]%s <===\n", __func__);
@@ -921,7 +918,7 @@ pg_efuse_by_map_87xx(struct halmac_adapter *adapter,
  */
 enum halmac_ret_status
 mask_log_efuse_87xx(struct halmac_adapter *adapter,
-		    struct halmac_pg_efuse_info *info)
+			struct halmac_pg_efuse_info *info)
 {
 	PLTFM_MSG_TRACE("[TRACE]%s ===>\n", __func__);
 
@@ -965,13 +962,13 @@ efuse_cmd_cnstr_state_87xx(struct halmac_adapter *adapter)
 
 enum halmac_ret_status
 switch_efuse_bank_87xx(struct halmac_adapter *adapter,
-		       enum halmac_efuse_bank bank)
+			   enum halmac_efuse_bank bank)
 {
 	u8 reg_value;
 	struct halmac_api *api = (struct halmac_api *)adapter->halmac_api;
 
 	if (cnv_efuse_state_87xx(adapter, HALMAC_CMD_CNSTR_BUSY) !=
-	    HALMAC_RET_SUCCESS)
+		HALMAC_RET_SUCCESS)
 		return HALMAC_RET_ERROR_STATE;
 
 	reg_value = HALMAC_REG_R8(REG_LDO_EFUSE_CTRL + 1);
@@ -992,7 +989,7 @@ switch_efuse_bank_87xx(struct halmac_adapter *adapter,
 
 static enum halmac_ret_status
 proc_dump_efuse_87xx(struct halmac_adapter *adapter,
-		     enum halmac_efuse_read_cfg cfg)
+			 enum halmac_efuse_read_cfg cfg)
 {
 	//u32 h2c_init;
 	struct halmac_api *api = (struct halmac_api *)adapter->halmac_api;
@@ -1004,7 +1001,7 @@ proc_dump_efuse_87xx(struct halmac_adapter *adapter,
 	*proc_status = HALMAC_CMD_PROCESS_SENDING;
 
 	if (cnv_efuse_state_87xx(adapter, HALMAC_CMD_CNSTR_H2C_SENT) !=
-	    HALMAC_RET_SUCCESS)
+		HALMAC_RET_SUCCESS)
 		return HALMAC_RET_ERROR_STATE;
 
 	if (cfg == HALMAC_EFUSE_R_AUTO) {
@@ -1031,13 +1028,13 @@ proc_dump_efuse_87xx(struct halmac_adapter *adapter,
 
 enum halmac_ret_status
 cnv_efuse_state_87xx(struct halmac_adapter *adapter,
-		     enum halmac_cmd_construct_state dest_state)
+			 enum halmac_cmd_construct_state dest_state)
 {
 	struct halmac_efuse_state *state = &adapter->halmac_state.efuse_state;
 
 	if (state->cmd_cnstr_state != HALMAC_CMD_CNSTR_IDLE &&
-	    state->cmd_cnstr_state != HALMAC_CMD_CNSTR_BUSY &&
-	    state->cmd_cnstr_state != HALMAC_CMD_CNSTR_H2C_SENT)
+		state->cmd_cnstr_state != HALMAC_CMD_CNSTR_BUSY &&
+		state->cmd_cnstr_state != HALMAC_CMD_CNSTR_H2C_SENT)
 		return HALMAC_RET_ERROR_STATE;
 
 	if (state->cmd_cnstr_state == dest_state)
@@ -1130,7 +1127,7 @@ write_hw_efuse_87xx(struct halmac_adapter *adapter, u32 offset, u8 value)
 	value1=value1|BIT5;
 	HALMAC_REG_W8(REG_SYS_ISO_CTRL+1,value1);//open small power cut for efuse 3.3V
 
-	PLTFM_DELAY_US(1000);                    //delay 1ms
+	PLTFM_DELAY_US(1000);					//delay 1ms
 
 	value1=HALMAC_REG_R8(REG_SYS_ISO_CTRL+1);
 	value1=value1| BIT6;
@@ -1174,7 +1171,7 @@ write_hw_efuse_87xx(struct halmac_adapter *adapter, u32 offset, u8 value)
 	value1=value1&0xBF;
 	HALMAC_REG_W8(REG_SYS_ISO_CTRL+1,value1);//close large power cut for efuse 3.3V
 
-	PLTFM_DELAY_US(1000);                    //delay 1ms
+	PLTFM_DELAY_US(1000);					//delay 1ms
 
 	value1=HALMAC_REG_R8(REG_SYS_ISO_CTRL+1);
 	value1=value1&0xDF;
@@ -1201,7 +1198,7 @@ write_hw_efuse_87xx(struct halmac_adapter *adapter, u32 offset, u8 value)
 
 	if (adapter->efuse_auto_check_en == 1) {
 		if (read_hw_efuse_87xx(adapter, offset, 1, &value_read) !=
-		    HALMAC_RET_SUCCESS)
+			HALMAC_RET_SUCCESS)
 			return HALMAC_RET_EFUSE_R_FAIL;
 		if (value_read != value) {
 			PLTFM_MSG_ERR("[ERR]efuse compare\n");
@@ -1261,13 +1258,13 @@ eeprom_parser_87xx(struct halmac_adapter *adapter, u8 *phy_map, u8 *log_map)
 
 				if ((eeprom_idx + 1) > hw_info->eeprom_size) {
 					PLTFM_MSG_ERR("[ERR]efuse idx:0x%X\n",
-						      efuse_idx - 1);
+							  efuse_idx - 1);
 
 					PLTFM_MSG_ERR("[ERR]read hdr:0x%X\n",
-						      hdr);
+							  hdr);
 
 					PLTFM_MSG_ERR("[ERR]rad hdr2:0x%X\n",
-						      hdr2);
+							  hdr2);
 
 					return HALMAC_RET_EEPROM_PARSING_FAIL;
 				}
@@ -1279,7 +1276,7 @@ eeprom_parser_87xx(struct halmac_adapter *adapter, u8 *phy_map, u8 *log_map)
 				efuse_idx++;
 
 				if (efuse_idx > hw_info->efuse_size -
-				    prtct_efuse_size - 1)
+					prtct_efuse_size - 1)
 					return HALMAC_RET_EEPROM_PARSING_FAIL;
 
 				value8 = *(phy_map + efuse_idx);
@@ -1288,7 +1285,7 @@ eeprom_parser_87xx(struct halmac_adapter *adapter, u8 *phy_map, u8 *log_map)
 				efuse_idx++;
 
 				if (efuse_idx > hw_info->efuse_size -
-				    prtct_efuse_size)
+					prtct_efuse_size)
 					return HALMAC_RET_EEPROM_PARSING_FAIL;
 			}
 		}
@@ -1349,13 +1346,13 @@ eeprom_mask_parser_87xx(struct halmac_adapter *adapter, u8 *phy_map,
 
 				if ((eeprom_idx + 1) > hw_info->eeprom_size) {
 					PLTFM_MSG_ERR("[ERR]efuse idx:0x%X\n",
-						      efuse_idx - 1);
+							  efuse_idx - 1);
 
 					PLTFM_MSG_ERR("[ERR]read hdr:0x%X\n",
-						      hdr);
+							  hdr);
 
 					PLTFM_MSG_ERR("[ERR]read hdr2:0x%X\n",
-						      hdr2);
+							  hdr2);
 
 					return HALMAC_RET_EEPROM_PARSING_FAIL;
 				}
@@ -1366,7 +1363,7 @@ eeprom_mask_parser_87xx(struct halmac_adapter *adapter, u8 *phy_map,
 				efuse_idx++;
 
 				if (efuse_idx > hw_info->efuse_size -
-				    prtct_efuse_size - 1)
+					prtct_efuse_size - 1)
 					return HALMAC_RET_EEPROM_PARSING_FAIL;
 
 				*(log_mask + eeprom_idx) = 0x00;
@@ -1374,7 +1371,7 @@ eeprom_mask_parser_87xx(struct halmac_adapter *adapter, u8 *phy_map,
 				efuse_idx++;
 
 				if (efuse_idx > hw_info->efuse_size -
-				    prtct_efuse_size)
+					prtct_efuse_size)
 					return HALMAC_RET_EEPROM_PARSING_FAIL;
 			}
 		}
@@ -1426,7 +1423,7 @@ read_log_efuse_map_87xx(struct halmac_adapter *adapter, u8 *map)
 	}
 
 	if (eeprom_parser_87xx(adapter, adapter->efuse_map, map) !=
-	    HALMAC_RET_SUCCESS)
+		HALMAC_RET_SUCCESS)
 		return HALMAC_RET_EEPROM_PARSING_FAIL;
 
 	return status;
@@ -1498,7 +1495,7 @@ dump_efuse_drv_87xx(struct halmac_adapter *adapter)
 		}
 
 		if (read_hw_efuse_87xx(adapter, 0, efuse_size, map) !=
-		    HALMAC_RET_SUCCESS) {
+			HALMAC_RET_SUCCESS) {
 			PLTFM_FREE(map, efuse_size);
 			return HALMAC_RET_EFUSE_R_FAIL;
 		}
@@ -1681,7 +1678,7 @@ read_efuse_87xx(struct halmac_adapter *adapter, u32 offset, u32 size, u8 *map)
 		PLTFM_MEMCPY(map, adapter->efuse_map + offset, size);
 	} else {
 		if (read_hw_efuse_87xx(adapter, offset, size, map) !=
-		    HALMAC_RET_SUCCESS)
+			HALMAC_RET_SUCCESS)
 			return HALMAC_RET_EFUSE_R_FAIL;
 	}
 
@@ -1856,7 +1853,7 @@ update_eeprom_mask_87xx(struct halmac_adapter *adapter,
 			map_offset = i + j;
 			mask_offset = i >> 4;
 			if (*(u16 *)(map_pg + map_offset) ==
-			    *(u16 *)(map + map_offset)) {
+				*(u16 *)(map + map_offset)) {
 				switch (j) {
 				case 0:
 					clr_bit = BIT(4);
@@ -1931,8 +1928,8 @@ check_efuse_enough_87xx(struct halmac_adapter *adapter,
 	}
 
 	if (adapter->hw_cfg_info.efuse_size <=
-	    (pg_num + adapter->hw_cfg_info.prtct_efuse_size +
-	    adapter->efuse_end))
+		(pg_num + adapter->hw_cfg_info.prtct_efuse_size +
+		adapter->efuse_end))
 		return HALMAC_RET_EFUSE_NOT_ENOUGH;
 
 	return HALMAC_RET_SUCCESS;
@@ -1940,8 +1937,8 @@ check_efuse_enough_87xx(struct halmac_adapter *adapter,
 
 static enum halmac_ret_status
 pg_extend_efuse_87xx(struct halmac_adapter *adapter,
-		     struct halmac_pg_efuse_info *info, u8 word_en,
-		     u8 pre_word_en, u32 eeprom_offset)
+			 struct halmac_pg_efuse_info *info, u8 word_en,
+			 u8 pre_word_en, u32 eeprom_offset)
 {
 	u8 blk;
 	u8 hdr;
@@ -1972,18 +1969,18 @@ pg_extend_efuse_87xx(struct halmac_adapter *adapter,
 	for (i = 0; i < 4; i++) {
 		if (((pre_word_en >> i) & 0x1) > 0) {
 			status = write_hw_efuse_87xx(adapter, efuse_end,
-						     *(info->efuse_map +
-						     eeprom_offset +
-						     (i << 1)));
+							 *(info->efuse_map +
+							 eeprom_offset +
+							 (i << 1)));
 			if (status != HALMAC_RET_SUCCESS) {
 				PLTFM_MSG_ERR("[ERR]write efuse(<<1)\n");
 				return status;
 			}
 
 			status = write_hw_efuse_87xx(adapter, efuse_end + 1,
-						     *(info->efuse_map +
-						     eeprom_offset + (i << 1)
-						     + 1));
+							 *(info->efuse_map +
+							 eeprom_offset + (i << 1)
+							 + 1));
 			if (status != HALMAC_RET_SUCCESS) {
 				PLTFM_MSG_ERR("[ERR]write efuse(<<1)+1\n");
 				return status;
@@ -2020,17 +2017,17 @@ proc_pg_efuse_87xx(struct halmac_adapter *adapter,
 	for (i = 0; i < 4; i++) {
 		if (((pre_word_en >> i) & 0x1) > 0) {
 			status = write_hw_efuse_87xx(adapter, efuse_end,
-						     *(info->efuse_map +
-						     eeprom_offset +
-						     (i << 1)));
+							 *(info->efuse_map +
+							 eeprom_offset +
+							 (i << 1)));
 			if (status != HALMAC_RET_SUCCESS) {
 				PLTFM_MSG_ERR("[ERR]write efuse(<<1)\n");
 				return status;
 			}
 			status = write_hw_efuse_87xx(adapter, efuse_end + 1,
-						     *(info->efuse_map +
-						     eeprom_offset + (i << 1)
-						     + 1));
+							 *(info->efuse_map +
+							 eeprom_offset + (i << 1)
+							 + 1));
 			if (status != HALMAC_RET_SUCCESS) {
 				PLTFM_MSG_ERR("[ERR]write efuse(<<1)+1\n");
 				return status;
@@ -2066,18 +2063,18 @@ program_efuse_87xx(struct halmac_adapter *adapter,
 		if (pre_word_en > 0) {
 			if (eeprom_offset > 0x7f) {
 				status = pg_extend_efuse_87xx(adapter, info,
-							      word_en,
-							      pre_word_en,
-							      eeprom_offset);
+								  word_en,
+								  pre_word_en,
+								  eeprom_offset);
 				if (status != HALMAC_RET_SUCCESS) {
 					PLTFM_MSG_ERR("[ERR]extend efuse\n");
 					return status;
 				}
 			} else {
 				status = proc_pg_efuse_87xx(adapter, info,
-							    word_en,
-							    pre_word_en,
-							    eeprom_offset);
+								word_en,
+								pre_word_en,
+								eeprom_offset);
 				if (status != HALMAC_RET_SUCCESS) {
 					PLTFM_MSG_ERR("[ERR]extend efuse");
 					return status;
@@ -2137,7 +2134,7 @@ get_efuse_data_87xx(struct halmac_adapter *adapter, u8 *buf, u32 size)
 			state->seq_num, seq_num);
 	if (seq_num != state->seq_num) {
 		PLTFM_MSG_ERR("[ERR]Seq num mismatch : h2c->%d c2h->%d\n",
-			      state->seq_num, seq_num);
+				  state->seq_num, seq_num);
 		return HALMAC_RET_SUCCESS;
 	}
 
@@ -2160,7 +2157,7 @@ get_efuse_data_87xx(struct halmac_adapter *adapter, u8 *buf, u32 size)
 
 	PLTFM_MUTEX_LOCK(&adapter->efuse_mutex);
 	PLTFM_MEMCPY(adapter->efuse_map + seg_id * adapter->efuse_seg_size,
-		     buf + C2H_DATA_OFFSET_87XX, seg_size);
+			 buf + C2H_DATA_OFFSET_87XX, seg_size);
 	PLTFM_MUTEX_UNLOCK(&adapter->efuse_mutex);
 
 	if (EFUSE_DATA_GET_END_SEGMENT(buf) == 0) {
@@ -2187,7 +2184,7 @@ get_efuse_data_87xx(struct halmac_adapter *adapter, u8 *buf, u32 size)
 
 		if (adapter->evnt.log_efuse_map == 1) {
 			if (eeprom_parser_87xx(adapter, adapter->efuse_map,
-					       map) != HALMAC_RET_SUCCESS) {
+						   map) != HALMAC_RET_SUCCESS) {
 				PLTFM_FREE(map, eeprom_size);
 				return HALMAC_RET_EEPROM_PARSING_FAIL;
 			}
@@ -2198,8 +2195,8 @@ get_efuse_data_87xx(struct halmac_adapter *adapter, u8 *buf, u32 size)
 
 		if (adapter->evnt.log_efuse_mask == 1) {
 			if (eeprom_mask_parser_87xx(adapter, adapter->efuse_map,
-						    map)
-						    != HALMAC_RET_SUCCESS) {
+							map)
+							!= HALMAC_RET_SUCCESS) {
 				PLTFM_FREE(map, eeprom_size);
 				return HALMAC_RET_EEPROM_PARSING_FAIL;
 			}
@@ -2238,8 +2235,8 @@ get_efuse_data_87xx(struct halmac_adapter *adapter, u8 *buf, u32 size)
 
 enum halmac_ret_status
 get_dump_phy_efuse_status_87xx(struct halmac_adapter *adapter,
-			       enum halmac_cmd_process_status *proc_status,
-			       u8 *data, u32 *size)
+				   enum halmac_cmd_process_status *proc_status,
+				   u8 *data, u32 *size)
 {
 	u8 *map = NULL;
 	u32 efuse_size = adapter->hw_cfg_info.efuse_size;
@@ -2273,13 +2270,13 @@ get_dump_phy_efuse_status_87xx(struct halmac_adapter *adapter,
 		PLTFM_MEMCPY(map, adapter->efuse_map, efuse_size);
 #else
 		PLTFM_MEMCPY(map, adapter->efuse_map,
-			     efuse_size - prtct_efuse_size);
+				 efuse_size - prtct_efuse_size);
 		PLTFM_MEMCPY(map + efuse_size - prtct_efuse_size +
-			     RSVD_CS_EFUSE_SIZE,
-			     adapter->efuse_map + efuse_size -
-			     prtct_efuse_size + RSVD_CS_EFUSE_SIZE,
-			     prtct_efuse_size - RSVD_EFUSE_SIZE -
-			     RSVD_CS_EFUSE_SIZE);
+				 RSVD_CS_EFUSE_SIZE,
+				 adapter->efuse_map + efuse_size -
+				 prtct_efuse_size + RSVD_CS_EFUSE_SIZE,
+				 prtct_efuse_size - RSVD_EFUSE_SIZE -
+				 RSVD_CS_EFUSE_SIZE);
 #endif
 		PLTFM_MUTEX_UNLOCK(&adapter->efuse_mutex);
 
@@ -2293,8 +2290,8 @@ get_dump_phy_efuse_status_87xx(struct halmac_adapter *adapter,
 
 enum halmac_ret_status
 get_dump_log_efuse_status_87xx(struct halmac_adapter *adapter,
-			       enum halmac_cmd_process_status *proc_status,
-			       u8 *data, u32 *size)
+				   enum halmac_cmd_process_status *proc_status,
+				   u8 *data, u32 *size)
 {
 	u8 *map = NULL;
 	u32 eeprom_size = adapter->hw_cfg_info.eeprom_size;
@@ -2324,7 +2321,7 @@ get_dump_log_efuse_status_87xx(struct halmac_adapter *adapter,
 		PLTFM_MEMSET(map, 0xFF, eeprom_size);
 
 		if (eeprom_parser_87xx(adapter, adapter->efuse_map, map) !=
-		    HALMAC_RET_SUCCESS) {
+			HALMAC_RET_SUCCESS) {
 			PLTFM_FREE(map, eeprom_size);
 			return HALMAC_RET_EEPROM_PARSING_FAIL;
 		}
@@ -2339,8 +2336,8 @@ get_dump_log_efuse_status_87xx(struct halmac_adapter *adapter,
 
 enum halmac_ret_status
 get_dump_log_efuse_mask_status_87xx(struct halmac_adapter *adapter,
-				    enum halmac_cmd_process_status *proc_status,
-				    u8 *data, u32 *size)
+					enum halmac_cmd_process_status *proc_status,
+					u8 *data, u32 *size)
 {
 	u8 *map = NULL;
 	u32 eeprom_size = adapter->hw_cfg_info.eeprom_size;
@@ -2370,7 +2367,7 @@ get_dump_log_efuse_mask_status_87xx(struct halmac_adapter *adapter,
 		PLTFM_MEMSET(map, 0xFF, eeprom_size);
 
 		if (eeprom_mask_parser_87xx(adapter, adapter->efuse_map, map) !=
-		    HALMAC_RET_SUCCESS) {
+			HALMAC_RET_SUCCESS) {
 			PLTFM_FREE(map, eeprom_size);
 			return HALMAC_RET_EEPROM_PARSING_FAIL;
 		}
@@ -2395,7 +2392,7 @@ get_h2c_ack_phy_efuse_87xx(struct halmac_adapter *adapter, u8 *buf, u32 size)
 			state->seq_num, seq_num);
 	if (seq_num != state->seq_num) {
 		PLTFM_MSG_ERR("[ERR]Seq num mismatch : h2c->%d c2h->%d\n",
-			      state->seq_num, seq_num);
+				  state->seq_num, seq_num);
 		return HALMAC_RET_SUCCESS;
 	}
 
@@ -2463,7 +2460,7 @@ write_wifi_phy_efuse_87xx(struct halmac_adapter *adapter, u32 offset, u8 value)
 	}
 
 	if (cnv_efuse_state_87xx(adapter, HALMAC_CMD_CNSTR_IDLE) !=
-	    HALMAC_RET_SUCCESS)
+		HALMAC_RET_SUCCESS)
 		return HALMAC_RET_ERROR_STATE;
 
 	PLTFM_MSG_TRACE("[TRACE]%s <===\n", __func__);
@@ -2494,7 +2491,7 @@ read_wifi_phy_efuse_87xx(struct halmac_adapter *adapter, u32 offset, u32 size,
 	PLTFM_MSG_TRACE("[TRACE]%s ===>\n", __func__);
 
 	if (offset >= adapter->hw_cfg_info.efuse_size ||
-	    offset + size >= adapter->hw_cfg_info.efuse_size) {
+		offset + size >= adapter->hw_cfg_info.efuse_size) {
 		PLTFM_MSG_ERR("[ERR] Wrong efuse index\n");
 		return HALMAC_RET_EFUSE_SIZE_INCORRECT;
 	}
@@ -2522,7 +2519,7 @@ read_wifi_phy_efuse_87xx(struct halmac_adapter *adapter, u32 offset, u32 size,
 	}
 
 	if (cnv_efuse_state_87xx(adapter, HALMAC_CMD_CNSTR_IDLE) !=
-	    HALMAC_RET_SUCCESS)
+		HALMAC_RET_SUCCESS)
 		return HALMAC_RET_ERROR_STATE;
 
 	PLTFM_MSG_TRACE("[TRACE]%s <===\n", __func__);

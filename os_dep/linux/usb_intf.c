@@ -1349,7 +1349,9 @@ static int rtw_drv_init(struct usb_interface *pusb_intf, const struct usb_device
 #ifdef CONFIG_GLOBAL_UI_PID
 	if (ui_pid[1] != 0) {
 		RTW_INFO("ui_pid[1]:%d\n", ui_pid[1]);
+#ifndef CONFIG_DISABLE_KILLPID
 		rtw_signal_process(ui_pid[1], SIGUSR2);
+#endif
 	}
 #endif
 

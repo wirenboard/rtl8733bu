@@ -146,7 +146,9 @@ void rtw_request_wps_pbc_event(_adapter *padapter)
 		return;
 	}
 
+#ifndef CONFIG_DISABLE_KILLPID
 	rtw_signal_process(padapter->pid[0], SIGUSR1);
+#endif
 
 #endif
 

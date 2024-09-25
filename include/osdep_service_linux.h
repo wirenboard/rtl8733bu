@@ -160,7 +160,7 @@
  * refs/heads/android13-5.15-lts (5.15.106)
  */
 #if (defined(__ANDROID_COMMON_KERNEL__) && (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 94)))
-        #define CONFIG_MLD_KERNEL_PATCH
+        #define CONFIG_ACK_5_15_LTS_KERNEL
 #endif
 
 typedef struct	semaphore _sema;

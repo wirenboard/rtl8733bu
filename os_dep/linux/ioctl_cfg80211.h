@@ -349,6 +349,7 @@ void rtw_cfg80211_indicate_sta_disassoc(_adapter *padapter, const u8 *da, unsign
 int rtw_cfg80211_set_mgnt_wpsp2pie(struct net_device *net, char *buf, int len, int type);
 #endif /* CONFIG_AP_MODE */
 
+_adapter *rtw_cfg80211_get_iface_is_roch(_adapter *adapter);
 void rtw_cfg80211_set_is_roch(_adapter *adapter, bool val);
 bool rtw_cfg80211_get_is_roch(_adapter *adapter);
 bool rtw_cfg80211_is_ro_ch_once(_adapter *adapter);

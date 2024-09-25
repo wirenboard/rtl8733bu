@@ -9531,22 +9531,18 @@ int issue_deauth_ex(_adapter *padapter, u8 *da, unsigned short reason, int try_c
 
 	} while ((i < try_cnt) && ((ret == _FAIL) || (wait_ms == 0)));
 
-	if (ret != _FAIL) {
+	if (ret != _FAIL)
 		ret = _SUCCESS;
-#ifndef DBG_XMIT_ACK
-		goto exit;
-#endif
-	}
 
 	if (try_cnt && wait_ms) {
 		if (da)
 			RTW_INFO(FUNC_ADPT_FMT" to "MAC_FMT", ch:%u%s, %d/%d in %u ms\n",
 				FUNC_ADPT_ARG(padapter), MAC_ARG(da), rtw_get_oper_ch(padapter),
-				ret == _SUCCESS ? ", acked" : "", i, try_cnt, rtw_get_passing_time_ms(start));
+				ret == _SUCCESS ? ", acked" : ", not acked", i, try_cnt, rtw_get_passing_time_ms(start));
 		else
 			RTW_INFO(FUNC_ADPT_FMT", ch:%u%s, %d/%d in %u ms\n",
 				FUNC_ADPT_ARG(padapter), rtw_get_oper_ch(padapter),
-				ret == _SUCCESS ? ", acked" : "", i, try_cnt, rtw_get_passing_time_ms(start));
+				ret == _SUCCESS ? ", acked" : ", not acked", i, try_cnt, rtw_get_passing_time_ms(start));
 	}
 exit:
 	return ret;

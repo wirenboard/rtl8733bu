@@ -141,9 +141,9 @@ exit:
 static void rtw_regd_schedule_dfs_chan_update(struct wiphy *wiphy)
 {
 	struct rtw_wiphy_data *wiphy_data = rtw_wiphy_priv(wiphy);
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2)) || defined(CONFIG_ACK_5_15_LTS_KERNEL)
 	unsigned int link_id = 0; /*TBD*/
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0)) || defined(CONFIG_ACK_5_15_LTS_KERNEL)
 	u16 punct_bitmap = 0; /*TBD*/
 #endif
 #endif
@@ -154,7 +154,7 @@ static void rtw_regd_schedule_dfs_chan_update(struct wiphy *wiphy)
 			return;
 		rtw_regd_set_du_chdef(wiphy);
 	}
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0)) || defined(CONFIG_MLD_KERNEL_PATCH)
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0)) || defined(CONFIG_ACK_5_15_LTS_KERNEL)
 	/* ToDo CONFIG_RTW_MLD */
 	cfg80211_ch_switch_notify(wiphy_data->du_wdev->netdev, &wiphy_data->du_chdef,
 	                          link_id, punct_bitmap);
@@ -1079,7 +1079,7 @@ static void rtw_cfg80211_cac_event(struct rf_ctl_t *rfctl, u8 band_idx
 			continue;
 		if (!iface->rtw_wdev)
 			continue;
-#if defined(CONFIG_MLD_KERNEL_PATCH) || (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2))
+#if defined(CONFIG_ACK_5_15_LTS_KERNEL) || (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 19, 2))
 		async = !((iface->rtw_wdev)->links[0].ap.chandef.chan);
 #else
 		async = !iface->rtw_wdev->chandef.chan;

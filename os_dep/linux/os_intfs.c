@@ -5500,10 +5500,12 @@ int rtw_resume_process_wow(_adapter *padapter)
 	/* start netif queue */
 	rtw_mi_netif_wake_queue(padapter);
 
+#ifndef CONFIG_DISABLE_KILLPID
 	if (padapter->pid[1] != 0) {
 		RTW_INFO("pid[1]:%d\n", padapter->pid[1]);
 		rtw_signal_process(padapter->pid[1], SIGUSR2);
 	}
+#endif
 
 	if (rtw_chk_roam_flags(padapter, RTW_ROAM_ON_RESUME)) {
 		if (pwrpriv->wowlan_is_disconnect_reason) {
@@ -5654,10 +5656,12 @@ int rtw_resume_process_ap_wow(_adapter *padapter)
 	/* start netif queue */
 	rtw_mi_netif_wake_queue(padapter);
 
+#ifndef CONFIG_DISABLE_KILLPID
 	if (padapter->pid[1] != 0) {
 		RTW_INFO("pid[1]:%d\n", padapter->pid[1]);
 		rtw_signal_process(padapter->pid[1], SIGUSR2);
 	}
+#endif
 
 #ifdef CONFIG_RESUME_IN_WORKQUEUE
 	/* rtw_unlock_suspend(); */

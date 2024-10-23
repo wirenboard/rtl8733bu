@@ -127,7 +127,8 @@ dump_efuse_map_87xx(struct halmac_adapter *adapter,
 	}
 
 	if (adapter->halmac_state.mac_pwr == HALMAC_MAC_POWER_OFF)
-		PLTFM_MSG_ERR("[ERR]Dump efuse in suspend\n");
+        // This is not a problem for rtl8733bu, the read completes successfully
+		PLTFM_MSG_TRACE("[ERR]Dump efuse in suspend\n");
 
 	*proc_status = HALMAC_CMD_PROCESS_IDLE;
 	adapter->evnt.phy_efuse_map = 1;
@@ -527,7 +528,8 @@ dump_log_efuse_map_87xx(struct halmac_adapter *adapter,
 	}
 
 	if (adapter->halmac_state.mac_pwr == HALMAC_MAC_POWER_OFF)
-		PLTFM_MSG_ERR("[ERR]Dump efuse in suspend\n");
+        // This is not a problem for rtl8733bu, the read completes successfully
+		PLTFM_MSG_TRACE("[ERR]Dump efuse in suspend\n");
 
 	*proc_status = HALMAC_CMD_PROCESS_IDLE;
 	adapter->evnt.log_efuse_map = 1;
@@ -605,7 +607,8 @@ dump_log_efuse_mask_87xx(struct halmac_adapter *adapter,
 	}
 
 	if (adapter->halmac_state.mac_pwr == HALMAC_MAC_POWER_OFF)
-		PLTFM_MSG_ERR("[ERR]Dump efuse in suspend\n");
+        // This is not a problem for rtl8733bu, the read completes successfully
+		PLTFM_MSG_TRACE("[ERR]Dump efuse in suspend\n");
 
 	*proc_status = HALMAC_CMD_PROCESS_IDLE;
 	adapter->evnt.log_efuse_mask = 1;

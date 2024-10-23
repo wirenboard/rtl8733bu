@@ -114,6 +114,11 @@ void rtw_set_tx_chksum_offload(_pkt *pkt, struct pkt_attrib *pattrib)
 
 int rtw_os_xmit_resource_alloc(_adapter *padapter, struct xmit_buf *pxmitbuf, u32 alloc_sz, u8 flag)
 {
+#ifdef CONFIG_PCIE_DMA_COHERENT
+	struct dvobj_priv *pdvobjpriv = adapter_to_dvobj(padapter);
+	struct pci_dev *pdev = pdvobjpriv->ppcidev;
+#endif
+
 	if (alloc_sz > 0) {
 #ifdef CONFIG_USE_USB_BUFFER_ALLOC_TX
 		struct dvobj_priv	*pdvobjpriv = adapter_to_dvobj(padapter);
@@ -125,7 +130,11 @@ int rtw_os_xmit_resource_alloc(_adapter *padapter, struct xmit_buf *pxmitbuf, u3
 			return _FAIL;
 #else /* CONFIG_USE_USB_BUFFER_ALLOC_TX */
 
+#ifdef CONFIG_PCIE_DMA_COHERENT
+		pxmitbuf->pallocated_buf = dma_alloc_coherent(&pdev->dev, alloc_sz, &pxmitbuf->dma_bpa, GFP_KERNEL);
+#else
 		pxmitbuf->pallocated_buf = rtw_zmalloc(alloc_sz);
+#endif
 		if (pxmitbuf->pallocated_buf == NULL)
 			return _FAIL;
 
@@ -152,6 +161,11 @@ int rtw_os_xmit_resource_alloc(_adapter *padapter, struct xmit_buf *pxmitbuf, u3
 
 void rtw_os_xmit_resource_free(_adapter *padapter, struct xmit_buf *pxmitbuf, u32 free_sz, u8 flag)
 {
+#ifdef CONFIG_PCIE_DMA_COHERENT
+	struct dvobj_priv *pdvobjpriv = adapter_to_dvobj(padapter);
+	struct pci_dev *pdev = pdvobjpriv->ppcidev;
+#endif
+
 	if (flag) {
 #ifdef CONFIG_USB_HCI
 		int i;
@@ -175,7 +189,11 @@ void rtw_os_xmit_resource_free(_adapter *padapter, struct xmit_buf *pxmitbuf, u3
 		pxmitbuf->dma_transfer_addr = 0;
 #else	/* CONFIG_USE_USB_BUFFER_ALLOC_TX */
 		if (pxmitbuf->pallocated_buf)
+		#ifdef CONFIG_PCIE_DMA_COHERENT
+			dma_free_coherent(&pdev->dev, free_sz, pxmitbuf->pallocated_buf, pxmitbuf->dma_bpa);
+		#else
 			rtw_mfree(pxmitbuf->pallocated_buf, free_sz);
+		#endif
 #endif /* CONFIG_USE_USB_BUFFER_ALLOC_TX */
 	}
 }

@@ -1397,8 +1397,9 @@ void _halrf_set_power_base_8733b(void *dm_void, u8 path)
 	RF_DBG(dm, DBG_RF_TX_PWR_TRACK,
 		"[RF][TSSI] current_path = %d, txagc_offset[0] = 0x%x\n",
 		path, tssi->txagc_offset_thermaltrack[path]);
-	if ((!(dm->rfe_type <= 2 ||
-		dm->rfe_type == 4 || dm->rfe_type == 9))) {
+	if (!(dm->rfe_type <= 2 ||
+		dm->rfe_type == 4 || dm->rfe_type == 9
+		|| dm->rfe_type == 13)) {
 		/*if not only one path, do another pathK*/
 		poll_cnt = 0;
 		path = ~path & 0x1;

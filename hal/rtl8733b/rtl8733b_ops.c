@@ -336,12 +336,11 @@ static void Hal_EfuseParseBTCoexistInfo(PADAPTER adapter, u8 *map, u8 mapvalid)
 
 static void Hal_EfuseParseChnlPlan(PADAPTER adapter, u8 *map, u8 autoloadfail)
 {
-	hal_com_config_channel_plan(
+	hal_com_parse_channel_plan(
 		adapter,
 		map ? &map[EEPROM_COUNTRY_CODE_8733B] : NULL,
 		map ? map[EEPROM_ChannelPlan_8733B] : 0xFF,
-		adapter->registrypriv.alpha2,
-		adapter->registrypriv.channel_plan,
+		RTW_CHPLAN_6G_NULL,
 		autoloadfail
 	);
 }
@@ -870,7 +869,13 @@ static void xmit_status_check(PADAPTER p)
 		psrtpriv->self_dect_case = 4;
 		rtw_hal_sreset_reset(p);
 	}
-#ifdef CONFIG_USB_HCI
+
+/* 
+ * Empty xmitbuf doesn't mean tx hang.Sometimes
+ * Wi-Fi TX retry too many times will cause empty xmitbuf.
+ */
+#if 0
+//#ifdef CONFIG_USB_HCI
 	current_time = rtw_get_current_time();
 
 	if (0 == pxmitpriv->free_xmitbuf_cnt || 0 == pxmitpriv->free_xmit_extbuf_cnt) {
@@ -883,16 +888,17 @@ static void xmit_status_check(PADAPTER p)
 				diff_time = rtw_get_passing_time_ms(psrtpriv->last_tx_complete_time);
 				if (diff_time > 4000) {
 					RTW_INFO("%s tx hang %s\n", __FUNCTION__,
-						(rtw_odm_adaptivity_needed(p)) ? "ODM_BB_ADAPTIVITY" : "");
+						!adapter_to_rfctl(p)->adaptivity_en ? "" :
+							rtw_edcca_mode_str(rtw_get_edcca_mode(adapter_to_dvobj(p), hal->current_band_type)));
 
-					if (!rtw_odm_adaptivity_needed(p)) {
+					if (!adapter_to_rfctl(p)->adaptivity_en) {
 						psrtpriv->self_dect_tx_cnt++;
 						psrtpriv->self_dect_case = 1;
 						rtw_hal_sreset_reset(p);
+					}
 				}
 			}
 		}
-	}
 	}
 #endif /* CONFIG_USB_HCI */
 
@@ -1461,7 +1467,7 @@ static void hw_var_set_mlme_sitesurvey(PADAPTER adapter, u8 enable)
 		rtw_hal_rcr_set_chk_bssid(adapter, MLME_SCAN_ENTER);
 
 		if (rtw_mi_get_ap_num(adapter) || rtw_mi_get_mesh_num(adapter))
-			StopTxBeacon(adapter);
+			StopTxBeacon_with_reason(adapter, CTRL_TX_BCN_BY_SCAN);
 	} else {
 		/* sitesurvey done
 		 * 1. enable rx data frame
@@ -1476,7 +1482,7 @@ static void hw_var_set_mlme_sitesurvey(PADAPTER adapter, u8 enable)
 
 		#ifdef CONFIG_AP_MODE
 		if (rtw_mi_get_ap_num(adapter) || rtw_mi_get_mesh_num(adapter)) {
-			ResumeTxBeacon(adapter);
+			ResumeTxBeacon_with_reason(adapter, CTRL_TX_BCN_BY_SCAN);
 			rtw_mi_tx_beacon_hdl(adapter);
 		}
 		#endif
@@ -1501,7 +1507,7 @@ static void hw_var_set_mlme_join(PADAPTER adapter, u8 type)
 	if (type == 0) {
 		/* prepare to join */
 		if (rtw_mi_get_ap_num(adapter) || rtw_mi_get_mesh_num(adapter))
-			StopTxBeacon(adapter);
+			StopTxBeacon_with_reason(adapter, CTRL_TX_BCN_BY_JOIN);
 
 		/* enable to rx data frame.Accept all data frame */
 		rtw_write16(adapter, REG_RXFLTMAP2_8733B, 0xFFFF);
@@ -1532,7 +1538,7 @@ static void hw_var_set_mlme_join(PADAPTER adapter, u8 type)
 		rtw_iface_disable_tsf_update(adapter);
 
 		if (rtw_mi_get_ap_num(adapter) || rtw_mi_get_mesh_num(adapter)) {
-			ResumeTxBeacon(adapter);
+			ResumeTxBeacon_with_reason(adapter, CTRL_TX_BCN_BY_JOIN);
 
 			/* reset TSF 1/2 after resume_tx_beacon */
 			val8 = BIT_TSFTR_RST_8733B | BIT_TSFTR_CLI0_RST_8733B;
@@ -1551,7 +1557,7 @@ static void hw_var_set_mlme_join(PADAPTER adapter, u8 type)
 		}
 
 		if (rtw_mi_get_ap_num(adapter) || rtw_mi_get_mesh_num(adapter)) {
-			ResumeTxBeacon(adapter);
+			ResumeTxBeacon_with_reason(adapter, CTRL_TX_BCN_BY_JOIN);
 
 			/* reset TSF 1/2 after resume_tx_beacon */
 			rtw_write8(adapter, REG_DUAL_TSF_RST_8733B, BIT_TSFTR_RST_8733B | BIT_TSFTR_CLI0_RST_8733B);
@@ -2048,11 +2054,11 @@ u8 rtl8733b_sethwreg(PADAPTER adapter, u8 variable, u8 *val)
 
 	case HW_VAR_RESP_SIFS:
 		/* RESP_SIFS for CCK */
-		rtw_write8(adapter, REG_RESP_SIFS_CCK_8733B, val[0]);
-		rtw_write8(adapter, REG_RESP_SIFS_CCK_8733B + 1, val[1]);
+		rtw_write8(adapter, REG_RESP_SIFS_CCK_8733B, 0x08);
+		rtw_write8(adapter, REG_RESP_SIFS_CCK_8733B + 1, 0x08);
 		/* RESP_SIFS for OFDM */
-		rtw_write8(adapter, REG_RESP_SIFS_OFDM_8733B, val[2]);
-		rtw_write8(adapter, REG_RESP_SIFS_OFDM_8733B + 1, val[3]);
+		rtw_write8(adapter, REG_RESP_SIFS_OFDM_8733B, 0x0a);
+		rtw_write8(adapter, REG_RESP_SIFS_OFDM_8733B + 1, 0x0a);
 		break;
 
 	case HW_VAR_ACK_PREAMBLE:
@@ -2171,7 +2177,9 @@ u8 rtl8733b_sethwreg(PADAPTER adapter, u8 variable, u8 *val)
 		if (*val == P2P_PS_ENABLE)
 			rtw_set_default_port_id(adapter);
 		#endif
-		rtw_set_p2p_ps_offload_cmd(adapter, *val);
+		/* 8733B HW do not support send_h2c_pkt */
+		/* rtw_set_p2p_ps_offload_cmd(adapter, *val); */
+		rtl8733b_set_p2p_ps_offload_cmd(adapter, *val);
 		break;
 #endif /* CONFIG_P2P_PS */
 /*
@@ -2217,6 +2225,7 @@ u8 rtl8733b_sethwreg(PADAPTER adapter, u8 variable, u8 *val)
 					break;
 
 				RTW_INFO("[HW_VAR_FIFO_CLEARN_UP] val=%x times:%d\n", val32, trycnt);
+				rtw_yield_os();
 			} while (--trycnt);
 			if (trycnt == 0)
 				RTW_INFO("[HW_VAR_FIFO_CLEARN_UP] Stop RX DMA failed!\n");
@@ -2339,7 +2348,6 @@ u8 rtl8733b_sethwreg(PADAPTER adapter, u8 variable, u8 *val)
 	case HW_VAR_TX_RPT_MAX_MACID:
 	case HW_VAR_CHK_HI_QUEUE_EMPTY:
 	case HW_VAR_AMPDU_MAX_TIME:
-	case HW_VAR_WIRELESS_MODE:
 	case HW_VAR_USB_MODE:
 		break;
 */
@@ -2731,7 +2739,7 @@ static void hw_var_detect_rxff_hang(PADAPTER padapter)
 	u32 rxff_cnt_orig_r = 0, rxff_cnt_orig_w = 0, rxff_cnt_r = 0, rxff_cnt_w = 0;
 	u8 i = 0;
 	u8 check_rxff_hang = _FALSE;
-	PHAL_DATA_TYPE hal = GET_HAL_DATA(padapter);
+	HAL_DATA_TYPE *hal = GET_HAL_DATA(padapter);
 	struct sreset_priv *psrtpriv = &hal->srestpriv;
 
 	rxff_cnt_orig_r = rtw_read16(padapter, 0x11C + 2);
@@ -3012,7 +3020,6 @@ void rtl8733b_gethwreg(PADAPTER adapter, u8 variable, u8 *val)
 /*
 	case HW_VAR_DL_BCN_SEL:
 	case HW_VAR_AMPDU_MAX_TIME:
-	case HW_VAR_WIRELESS_MODE:
 	case HW_VAR_USB_MODE:
 	case HW_VAR_PORT_SWITCH:
 	case HW_VAR_DO_IQK:

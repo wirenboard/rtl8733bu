@@ -159,6 +159,10 @@ void usb_free_recv_priv(_adapter *padapter, u16 ini_in_buf_sz)
 	struct recv_buf *precvbuf;
 	struct recv_priv	*precvpriv = &padapter->recvpriv;
 
+#ifdef PLATFORM_LINUX
+	tasklet_kill(&precvpriv->recv_tasklet);
+#endif
+
 	precvbuf = (struct recv_buf *)precvpriv->precv_buf;
 
 	for (i = 0; i < regsty->recvbuf_nr ; i++) {

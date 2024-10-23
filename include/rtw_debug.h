@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Copyright(c) 2007 - 2019 Realtek Corporation.
+ * Copyright(c) 2007 - 2021 Realtek Corporation.
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
@@ -117,7 +117,7 @@ extern uint rtw_drv_log_level;
 
 #ifdef DBG_CPU_INFO
 #define CPU_INFO_FMT	"[%u] "
-#define CPU_INFO_ARG	get_cpu()
+#define CPU_INFO_ARG	task_cpu(current)
 #else /* !DBG_CPU_INFO */
 #define CPU_INFO_FMT	"%s"
 #define CPU_INFO_ARG	""
@@ -249,7 +249,7 @@ extern uint rtw_drv_log_level;
 #define RTW_PRINT_SEL(sel, fmt, arg...) \
 	do {\
 		if (sel == RTW_DBGDUMP)\
-			RTW_DBG(fmt, ##arg); \
+			RTW_PRINT(fmt, ##arg); \
 		else {\
 			_seqdump(sel, fmt, ##arg) /*rtw_warn_on(1)*/; \
 		} \
@@ -269,10 +269,10 @@ extern uint rtw_drv_log_level;
 /* dump message to selected 'stream' */
 #undef RTW_DUMP_SEL
 #define RTW_DUMP_SEL(sel, _HexData, _HexDataLen) \
-	RTW_BUF_DUMP_SEL(_DRV_DEBUG_, sel, NULL, _FALSE, _HexData, _HexDataLen)
+	RTW_BUF_DUMP_SEL(_DRV_ALWAYS_, sel, NULL, _FALSE, _HexData, _HexDataLen)
 
 #define RTW_MAP_DUMP_SEL(sel, _TitleString, _HexData, _HexDataLen) \
-	RTW_BUF_DUMP_SEL(_DRV_DEBUG_, sel, _TitleString, _TRUE, _HexData, _HexDataLen)
+	RTW_BUF_DUMP_SEL(_DRV_ALWAYS_, sel, _TitleString, _TRUE, _HexData, _HexDataLen)
 #endif /* defined(_seqdump) */
 
 
@@ -387,6 +387,8 @@ ssize_t proc_set_ap_linking_test(struct file *file, const char __user *buffer, s
 
 int proc_get_rx_stat(struct seq_file *m, void *v);
 int proc_get_tx_stat(struct seq_file *m, void *v);
+int proc_get_sta_tx_stat(struct seq_file *m, void *v);
+ssize_t proc_set_sta_tx_stat(struct file *file, const char __user *buffer, size_t count, loff_t *pos, void *data);
 #ifdef CONFIG_AP_MODE
 int proc_get_all_sta_info(struct seq_file *m, void *v);
 #endif /* CONFIG_AP_MODE */
@@ -679,10 +681,20 @@ int proc_get_smps(struct seq_file *m, void *v);
 int proc_get_defs_param(struct seq_file *m, void *v);
 ssize_t proc_set_defs_param(struct file *file, const char __user *buffer, size_t count, loff_t *pos, void *data);
 
+#ifdef CONFIG_ECSA
 #if defined(CONFIG_CONCURRENT_MODE) && defined(CONFIG_AP_MODE)
 ssize_t proc_set_ap_csa_cnt(struct file *file, const char __user *buffer, size_t count, loff_t *pos, void *data);
 int proc_get_ap_csa_cnt(struct seq_file *m, void *v);
 #endif
+#ifdef PRIVATE_R
+ssize_t proc_set_p2p_park_ch(struct file *file, const char __user *buffer, size_t count, loff_t *pos, void *data);
+int proc_get_p2p_park_ch(struct seq_file *m, void *v);
+#endif /* PRIVATE_R */
+#endif /* CONFIG_ECSA */
+
+int proc_get_disconnect_info(struct seq_file *m, void *v);
+ssize_t proc_set_disconnect_info(struct file *file, const char __user *buffer,
+				 size_t count, loff_t *pos, void *data);
 
 #define _drv_always_		1
 #define _drv_emerg_			2

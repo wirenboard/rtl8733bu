@@ -25,22 +25,20 @@ enum security_type {
 	_WEP104_	= 0x05,
 	_SMS4_		= 0x06,
 	_GCMP_		= 0x07,
+#ifdef CONFIG_IEEE80211W
+	_BIP_CMAC_128_	= 0x08,
+	_BIP_GMAC_128_	= 0x09,
+#endif
 	_SEC_TYPE_MAX_,
 
 	/* EXT_SECTYPE=1 */
 	_SEC_TYPE_256_	= 0x10,
 	_CCMP_256_	= (_AES_ | _SEC_TYPE_256_),
 	_GCMP_256_	= (_GCMP_ | _SEC_TYPE_256_),
-
 #ifdef CONFIG_IEEE80211W
-	/* EXT_SECTYPE=0, MGNT=1, GK=0/1, KEYID=00/01 */
-	_SEC_TYPE_BIT_	= 0x20,
-	_BIP_CMAC_128_	= (_SEC_TYPE_BIT_),
-	_BIP_GMAC_128_	= (_SEC_TYPE_BIT_ + 1),
-	_BIP_GMAC_256_	= (_SEC_TYPE_BIT_ + 2),
 	/* EXT_SECTYPE=1, MGNT=1, GK=1, KEYID=00/01 */
-	_BIP_CMAC_256_	= (_SEC_TYPE_BIT_ + 3),
-	_BIP_MAX_,
+	_BIP_CMAC_256_	= (_BIP_CMAC_128_ | _SEC_TYPE_256_),
+	_BIP_GMAC_256_	= (_BIP_GMAC_128_ | _SEC_TYPE_256_),
 #endif
 };
 
@@ -216,7 +214,6 @@ struct security_priv {
 	u8 assoc_info[600];
 	u8 szofcapability[256]; /* for wpa2 usage */
 	u8 oidassociation[512]; /* for wpa/wpa2 usage */
-	u8 authenticator_ie[256];  /* store ap security information element */
 	u8 supplicant_ie[256];  /* store sta security information element */
 
 

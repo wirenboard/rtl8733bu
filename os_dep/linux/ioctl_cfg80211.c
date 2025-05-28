@@ -3212,7 +3212,7 @@ static int cfg80211_rtw_scan(struct wiphy *wiphy
 	_adapter *padapter;
 	struct wireless_dev *wdev;
 	struct rtw_wdev_priv *pwdev_priv;
-	struct mlme_priv *pmlmepriv = NULL;	
+	struct mlme_priv *pmlmepriv = NULL;
 	struct dvobj_priv *dvobj;
 #ifdef CONFIG_P2P
 	struct wifidirect_info *pwdinfo;

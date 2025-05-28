@@ -3241,6 +3241,19 @@ static int cfg80211_rtw_scan(struct wiphy *wiphy
 
 	pwdev_priv = adapter_wdev_data(padapter);
 	pmlmepriv = &padapter->mlmepriv;
+	
+	// check if buddy adapter is configured as client, if so, deny scan immediately	
+	RTW_DBG("scan request for %s\n", padapter->pnetdev->name);
+	RTW_DBG("this wlan state %08x\n", pmlmepriv->fw_state);
+	if (pmlmepriv) {
+		RTW_DBG("buddy wlan state %08x\n", pmlmepriv->fw_state);
+		if (check_fwstate(pmlmepriv, WIFI_ASOC_STATE) == _TRUE) {
+			RTW_DBG("scan on %s is cancelled, another interface is the client here\n", padapter->pnetdev->name);
+			ret = -EBUSY;
+			goto exit;
+		}
+	}
+		
 #ifdef CONFIG_P2P
 	pwdinfo = &(padapter->wdinfo);
 #endif /* CONFIG_P2P */

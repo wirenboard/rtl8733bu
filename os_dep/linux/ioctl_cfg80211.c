@@ -3212,7 +3212,7 @@ static int cfg80211_rtw_scan(struct wiphy *wiphy
 	_adapter *padapter;
 	struct wireless_dev *wdev;
 	struct rtw_wdev_priv *pwdev_priv;
-	struct mlme_priv *pmlmepriv = NULL;
+	struct mlme_priv *pmlmepriv = NULL, *buddy_mlmepriv;
 	struct dvobj_priv *dvobj;
 #ifdef CONFIG_P2P
 	struct wifidirect_info *pwdinfo;
@@ -3249,15 +3249,11 @@ static int cfg80211_rtw_scan(struct wiphy *wiphy
 	dvobj = adapter_to_dvobj(padapter);
 	for (i = 0; i < dvobj->iface_nums; i++) {
 		_adapter *iface = dvobj->padapters[i];
-		struct mlme_priv *buddy_mlmepriv;
 
 		if (iface == NULL || iface == padapter || rtw_is_adapter_up(iface) == _FALSE)
 			continue;
 
 		buddy_mlmepriv = &iface->mlmepriv;
-		if (buddy_mlmepriv == NULL)
-			continue;
-		
 		RTW_DBG("buddy wlan state: %08x\n", buddy_mlmepriv->fw_state);
 		if (check_fwstate(buddy_mlmepriv, WIFI_STATION_STATE) == _TRUE) {
 			RTW_DBG("scan on %s is cancelled, interface %s is the client here\n", padapter->pnetdev->name, iface->pnetdev->name);

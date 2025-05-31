@@ -3151,7 +3151,7 @@ static int cfg80211_rtw_scan(struct wiphy *wiphy
 
 		buddy_mlmepriv = &iface->mlmepriv;
 		RTW_DBG("buddy wlan state: %08x\n", buddy_mlmepriv->fw_state);
-		if (check_fwstate(buddy_mlmepriv, WIFI_STATION_STATE) == _TRUE) {
+		if (check_fwstate(buddy_mlmepriv, WIFI_STATION_STATE) == _TRUE && check_fwstate(buddy_mlmepriv, WIFI_ASOC_STATE) == _TRUE) {
 			RTW_DBG("scan on %s is cancelled, interface %s is the client here\n", padapter->pnetdev->name, iface->pnetdev->name);
 			ret = -EBUSY;
 			goto exit;

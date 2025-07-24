@@ -462,7 +462,7 @@ C2HTxRPTHandler_8733b(
 	PADAPTER	adapter_ognl = NULL;
 
 	if(!pstapriv->gotc2h) {
-		RTW_WARN("%s,%d: No gotc2h!\n", __FUNCTION__, __LINE__);
+		RTW_DBG("%s, %d: No gotc2h!\n", __FUNCTION__, __LINE__);
 		return;
 	}
 	
@@ -508,7 +508,7 @@ C2HSPC_STAT_8733b(
 	PADAPTER	adapter_ognl = NULL;
 
 	if(!pstapriv->gotc2h) {
-		RTW_WARN("%s, %d: No gotc2h!\n", __FUNCTION__, __LINE__);
+		RTW_DBG("%s, %d: No gotc2h!\n", __FUNCTION__, __LINE__);
 		return;
 	}
 	

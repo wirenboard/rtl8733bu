@@ -1055,7 +1055,7 @@ int rtw_get_sta_tx_stat(_adapter *adapter, u8 mac_id, u8 *macaddr)
 	exit_critical_bh(&pstapriv_primary->tx_rpt_lock);
 
 	if (cmd_ret == _SUCCESS && gotc2h->status != RTW_SCTX_DONE_SUCCESS) {
-		RTW_WARN("wait for C2H timeout, operation abort!!\n");
+		RTW_DBG("wait for C2H timeout, operation abort!!\n");
 		ret = _FAIL;
 	}
 

@@ -16243,8 +16243,13 @@ connect_allow_hdl:
 					&& check_fwstate(mlme, WIFI_ASOC_STATE)
 				) {
 					/* AP is switching channel, so don't flush clients */
-					if (!IS_ECSA_RUNNING(iface))
+					if (!IS_ECSA_RUNNING(iface)){
 						rtw_sta_flush(iface, _FALSE);
+						/* switch AP to client channel immediately */
+						rtw_change_bss_chbw_cmd(adapter, RTW_CMDF_DIRECTLY,
+							BIT(iface->iface_id), 0, u_ch,
+							REQ_BW_ORI, REQ_OFFSET_NONE);
+					}
 
 					rtw_hal_set_hwreg(iface, HW_VAR_CHECK_TXBUF, 0);
 					set_fwstate(mlme, WIFI_OP_CH_SWITCHING);

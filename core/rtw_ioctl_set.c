@@ -414,7 +414,7 @@ u8 rtw_set_802_11_connect(_adapter *padapter,
 
 	_enter_critical_bh(&pmlmepriv->lock, &irqL);
 
-	RTW_PRINT(FUNC_ADPT_FMT"  fw_state=0x%08x\n",
+	RTW_DBG(FUNC_ADPT_FMT"  fw_state=0x%08x\n",
 		  FUNC_ADPT_ARG(padapter), get_fwstate(pmlmepriv));
 
 	if (check_fwstate(pmlmepriv, WIFI_UNDER_SURVEY) == _TRUE)

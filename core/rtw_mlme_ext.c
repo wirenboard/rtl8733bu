@@ -2165,7 +2165,7 @@ normal:
 		if (rtw_ft_update_auth_rsp_ies(padapter, pframe, pkt_len))
 			return _SUCCESS;
 #endif
-		RTW_PRINT("auth success, start assoc\n");
+		RTW_DBG("auth success, start assoc\n");
 		start_clnt_assoc(padapter);
 		return _SUCCESS;
 	}
@@ -2714,7 +2714,7 @@ unsigned int OnDeAuth(_adapter *padapter, union recv_frame *precv_frame)
 		/* rtw_free_stainfo(padapter, psta); */
 		/* _exit_critical_bh(&(pstapriv->sta_hash_lock), &irqL);		 */
 
-		RTW_PRINT(FUNC_ADPT_FMT" reason=%u, ta=%pM\n"
+		RTW_DBG(FUNC_ADPT_FMT" reason=%u, ta=%pM\n"
 			, FUNC_ADPT_ARG(padapter), reason, get_addr2_ptr(pframe));
 
 		psta = rtw_get_stainfo(pstapriv, get_addr2_ptr(pframe));
@@ -2759,7 +2759,7 @@ unsigned int OnDeAuth(_adapter *padapter, union recv_frame *precv_frame)
 			ignore_received_deauth = 1;
 #endif
 
-		RTW_PRINT(FUNC_ADPT_FMT" reason=%u, ta=%pM, ignore=%d\n"
+		RTW_DBG(FUNC_ADPT_FMT" reason=%u, ta=%pM, ignore=%d\n"
 			, FUNC_ADPT_ARG(padapter), reason, get_addr2_ptr(pframe), ignore_received_deauth);
 
 		if (0 == ignore_received_deauth) {
@@ -11234,10 +11234,10 @@ void start_clnt_auth(_adapter *padapter)
 #ifdef CONFIG_RTW_80211R
 	if (rtw_ft_roam(padapter)) {
 		rtw_ft_set_status(padapter, RTW_FT_AUTHENTICATING_STA);
-		RTW_PRINT("start ft auth\n");
+		RTW_DBG("start ft auth\n");
 	} else
 #endif
-		RTW_PRINT("start auth\n");
+		RTW_DBG("start auth\n");
 
 #ifdef CONFIG_IOCTL_CFG80211
 	if (rtw_sec_chk_auth_type(padapter, MLME_AUTHTYPE_SAE)) {
@@ -11247,7 +11247,7 @@ void start_clnt_auth(_adapter *padapter)
 			goto no_external_auth;
 		}
 
-		RTW_PRINT("SAE: start external auth\n");
+		RTW_DBG("SAE: start external auth\n");
 		set_link_timer(pmlmeext, SAE_AUTH_TIMEOUT);
 		rtw_cfg80211_external_auth_request(padapter, NULL);
 		return;

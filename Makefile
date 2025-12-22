@@ -2696,6 +2696,9 @@ endif
 
 obj-$(CONFIG_RTL8733BU) := $(MODULE_NAME).o
 
+ccflags-y += $(EXTRA_CFLAGS)
+ldflags-y += $(EXTRA_LDFLAGS)
+
 else
 
 export CONFIG_RTL8733BU = m

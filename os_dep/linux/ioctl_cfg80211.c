@@ -3531,8 +3531,15 @@ static void cfg80211_rtw_abort_scan(struct wiphy *wiphy,
 }
 #endif
 
-static int cfg80211_rtw_set_wiphy_params(struct wiphy *wiphy, u32 changed)
+static int cfg80211_rtw_set_wiphy_params(struct wiphy *wiphy,
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 18, 0))
+					 int radio_idx,
+#endif
+					 u32 changed)
 {
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 18, 0))
+	(void)radio_idx;
+#endif
 #if 0
 	struct iwm_priv *iwm = wiphy_to_iwm(wiphy);
 
@@ -4589,6 +4596,9 @@ static int cfg80211_rtw_set_txpower(struct wiphy *wiphy,
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
 	struct wireless_dev *wdev,
 #endif
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 18, 0))
+	int radio_idx,
+#endif
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 36)) || defined(COMPAT_KERNEL_RELEASE)
 	enum nl80211_tx_power_setting type, int mbm)
 #else
@@ -4602,6 +4612,9 @@ static int cfg80211_rtw_set_txpower(struct wiphy *wiphy,
 	_adapter *adapter = wiphy_to_adapter(wiphy);
 	int ret = -EOPNOTSUPP;
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 18, 0))
+	(void)radio_idx;
+#endif
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
 	if (wdev) {
 		RTW_WARN(FUNC_WIPHY_FMT" wdev specific control is not supported\n", FUNC_WIPHY_ARG(wiphy));
@@ -4651,6 +4664,9 @@ static int cfg80211_rtw_get_txpower(struct wiphy *wiphy,
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
 	struct wireless_dev *wdev,
 #endif
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 18, 0))
+	int radio_idx,
+#endif
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 14, 0))
 	unsigned int link_id,
 #endif
@@ -4659,6 +4675,12 @@ static int cfg80211_rtw_get_txpower(struct wiphy *wiphy,
 	struct dvobj_priv *dvobj = wiphy_to_dvobj(wiphy);
 	s16 mbm;
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 18, 0))
+	(void)radio_idx;
+#endif
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 14, 0))
+	(void)link_id;
+#endif
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
 	if (wdev && wdev_to_ndev(wdev)) {
 		_adapter *adapter = (_adapter *)rtw_netdev_priv(wdev_to_ndev(wdev));

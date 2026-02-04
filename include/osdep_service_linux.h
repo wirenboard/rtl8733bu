@@ -52,6 +52,10 @@
 #include <linux/delay.h>
 #include <linux/interrupt.h>	/* for struct tasklet_struct */
 #include <linux/timer.h>
+#ifndef from_timer
+#define from_timer(var, callback_timer, timer_fieldname) \
+	container_of(callback_timer, typeof(*var), timer_fieldname)
+#endif
 #include <linux/ip.h>
 #include <linux/kthread.h>
 #include <linux/list.h>

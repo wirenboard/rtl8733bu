@@ -3193,11 +3193,14 @@ void rtw_sta_media_status_rpt(_adapter *adapter, struct sta_info *sta, bool conn
 		miracast_sink = miracast_enabled && (STA_OP_WFD_MODE(sta) & MIRACAST_SINK);
 
 #ifdef CONFIG_FW_MULTI_PORT_SUPPORT
-		adapter_dftport = rtw_select_and_set_dftport(adapter, _TRUE);
-#ifdef CONFIG_BT_COEXIST
-		if (GET_HAL_DATA(adapter)->EEPROMBluetoothCoexist == _TRUE) {
-			if (rtw_hal_set_wifi_btc_port_id_cmd(adapter_dftport) != _SUCCESS)
-				RTW_ERR("%s() rtw_hal_set_wifi_btc_port_id_cmd fail\n", __func__);
+			if (MLME_IS_STA(adapter))
+				adapter_dftport = rtw_select_and_set_dftport(adapter, _TRUE);
+			else
+				adapter_dftport = GET_PRIMARY_ADAPTER(adapter);
+	#ifdef CONFIG_BT_COEXIST
+			if (GET_HAL_DATA(adapter)->EEPROMBluetoothCoexist == _TRUE) {
+				if (rtw_hal_set_wifi_btc_port_id_cmd(adapter_dftport) != _SUCCESS)
+					RTW_ERR("%s() rtw_hal_set_wifi_btc_port_id_cmd fail\n", __func__);
 		}
 #endif
 #endif /* CONFIG_FW_MULTI_PORT_SUPPORT */
@@ -3467,12 +3470,15 @@ void rtw_sta_mstatus_disc_rpt(_adapter *adapter, u8 mac_id)
 			/*if (MLME_IS_STA(adapter))*/
 			rtw_hal_macid_wakeup(adapter, mac_id);
 		}
-#ifdef CONFIG_FW_MULTI_PORT_SUPPORT
-		adapter_dftport = rtw_select_and_set_dftport(adapter, _FALSE);
-#ifdef CONFIG_BT_COEXIST
-		if (GET_HAL_DATA(adapter)->EEPROMBluetoothCoexist == _TRUE) {
-			if (rtw_hal_set_wifi_btc_port_id_cmd(adapter_dftport) != _SUCCESS)
-				RTW_ERR("%s() rtw_hal_set_wifi_btc_port_id_cmd fail\n", __func__);
+	#ifdef CONFIG_FW_MULTI_PORT_SUPPORT
+			if (MLME_IS_STA(adapter))
+				adapter_dftport = rtw_select_and_set_dftport(adapter, _FALSE);
+			else
+				adapter_dftport = GET_PRIMARY_ADAPTER(adapter);
+	#ifdef CONFIG_BT_COEXIST
+			if (GET_HAL_DATA(adapter)->EEPROMBluetoothCoexist == _TRUE) {
+				if (rtw_hal_set_wifi_btc_port_id_cmd(adapter_dftport) != _SUCCESS)
+					RTW_ERR("%s() rtw_hal_set_wifi_btc_port_id_cmd fail\n", __func__);
 		}
 #endif
 #endif /* CONFIG_FW_MULTI_PORT_SUPPORT */
@@ -6138,4 +6144,3 @@ void dump_arp_pkt(void *sel, u8 *da, u8 *sa, u8 *arp, bool tx)
 	RTW_PRINT_SEL(sel, "tha="MAC_FMT", tpa="IP_FMT"\n"
 		, MAC_ARG(ARP_TARGET_MAC_ADDR(arp)), IP_ARG(ARP_TARGET_IP_ADDR(arp)));
 }
-
